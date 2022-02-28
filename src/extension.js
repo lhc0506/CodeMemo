@@ -1,4 +1,5 @@
 const vscode = require("vscode");
+const ReactPanel = require("./reactWebviewPanel");
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -13,6 +14,12 @@ function activate(context) {
   );
 
   context.subscriptions.push(disposable);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("codememo.webview", () => {
+      ReactPanel.createAndShow(context.extensionPath);
+    }),
+  );
 }
 
 function deactivate() {}
