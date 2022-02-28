@@ -10,14 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:codememo.helloWorld"
+    "onCommand:codememo.helloWorld",
+    "onCommand:codememo.webview"
   ],
-  "main": "./extension.js",
+  "main": "./src/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "codememo.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "codememo.webview",
+        "title": "Webview"
       }
     ]
   },
