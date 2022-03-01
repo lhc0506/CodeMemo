@@ -1,6 +1,6 @@
 {
   "name": "codememo",
-  "displayName": "codeMemo",
+  "displayName": "CodeMemo",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -10,11 +10,25 @@
     "Other"
   ],
   "activationEvents": [
+    "onCustomEditor:memoCustoms.memo",
     "onCommand:codememo.helloWorld",
-    "onCommand:codememo.webview"
+    "onCommand:codememo.webview",
+    "onCommand:codememo.create",
+    "onCommand:codememo.delete"
   ],
   "main": "./src/extension.js",
   "contributes": {
+    "customEditors": [
+			{
+				"viewType": "memoCustoms.memo",
+				"displayName": "Code Memo",
+				"selector": [
+					{
+						"filenamePattern": "*.memo"
+					}
+				]
+			}
+    ],
     "commands": [
       {
         "command": "codememo.helloWorld",
@@ -23,13 +37,47 @@
       {
         "command": "codememo.webview",
         "title": "Webview"
+      },
+      {
+        "command": "codememo.create",
+        "title": "createMemo"
+      },
+      {
+        "command": "codememo.delete",
+        "title": "deleteMemo"
       }
-    ]
+    ],
+    "submenus": [
+      {
+        "id": "codememo.menus",
+        "label": "codememo"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+				{
+          "submenu": "codememo.menus",
+          "group": "codememo"
+        }
+      ],"codememo.menus":[
+        {
+          "command": "codememo.create",
+          "group": "codememo",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "codememo.delete",
+          "group": "codememo",
+          "when": "editorTextFocus"
+        }
+      ]
+		}
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "node ./test/runTest.js",
+    "dev": "webpack",
+    "test": "node ./src/test/runTest.js",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -44,18 +92,30 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "14.x",
     "@types/vscode": "^1.64.0",
     "@vscode/test-electron": "^2.1.2",
+    "babel-loader": "^8.2.3",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.2",
     "glob": "^7.2.0",
-    "husky": "^7.0.0",
+    "husky": "^7.0.4",
     "lint-staged": "^12.3.4",
     "mocha": "^9.2.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "prop-types": "^15.8.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }
