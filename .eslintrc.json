@@ -1,14 +1,14 @@
 {
 	"env": {
-		"browser": false,
+		"browser": true,
 		"commonjs": true,
 		"es6": true,
 		"node": true,
 		"mocha": true,
 		"es2021": true
 	},
-	"plugins": ["prettier"],
-	"extends": ["eslint:recommended"],
+	"plugins": ["react", "prettier"],
+	"extends": ["plugin:react/recommended", "eslint:recommended"],
 	"parserOptions": {
 		"ecmaVersion": "latest",
 		"ecmaFeatures": {

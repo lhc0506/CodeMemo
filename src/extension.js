@@ -1,22 +1,17 @@
 const vscode = require("vscode");
+
 const ReactPanel = require("./reactWebviewPanel");
+const MemoEditorProvider = require("./memoEditor");
 /**
  * @param {vscode.ExtensionContext} context
  */
+
 function activate(context) {
-  console.log('Congratulations, your extension "codememo" is now active!');
-
-  let disposable = vscode.commands.registerCommand(
-    "codememo.helloWorld",
-    function () {
-      vscode.window.showInformationMessage("Hello World from codeMemo!");
-    },
-  );
-
-  context.subscriptions.push(disposable);
+  console.log("Congratulations, your extension 'codememo' is now active!");
+  context.subscriptions.push(MemoEditorProvider.register(context));
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("codememo.webview", () => {
+    vscode.commands.registerCommand("codememo.create", () => {
       ReactPanel.createAndShow(context.extensionPath);
     }),
   );
