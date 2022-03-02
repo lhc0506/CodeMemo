@@ -95,9 +95,7 @@ class ReactPanel {
   </html>`;
   }
 
-  async receiveMessage(message) {
-    console.log(message);
-  }
+  async receiveMessage(message) {}
 }
 
 async function loadFile(saveUri) {
@@ -105,8 +103,6 @@ async function loadFile(saveUri) {
   try {
     const buffer = await vscode.workspace.fs.readFile(saveUri);
     fileData = JSON.parse(buffer.toString());
-    console.log("파일 데이터어어", fileData);
-    console.log("thisthis", this);
     this._panel.webview.postMessage({ command: "load", data: fileData });
   } catch (error) {
     console.log("error", error);

@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from "react";
-import Memo from "./Memo";
+import { useSelector, useDispatch } from "react-redux";
+import MemoContainer from "./memo/MemoContainer";
+import NewMemo from "./memo/NewMemo";
+import { createMode } from "./memoSlice";
 
 function App() {
   const [memoData, setMemoData] = useState();
-  const [newMemo, setNewMemo] = useState(false);
+  const dispatch = useDispatch();
+  const type = useSelector((state) => state.memo.type);
+
   useEffect(() => {
-    vscode.postMessage({
-      type: "load",
-    });
     const onUpdate = (event) => {
       switch (event.data.command) {
         case "update":
           setMemoData(event.data.data);
           break;
-        case "load":
-          setNewMemo(true);
+        case "create":
+          dispatch(createMode(event.data.data));
       }
     };
+
     window.addEventListener("message", onUpdate);
+
     return () => window.removeEventListener("message", onUpdate);
   }, []);
 
-  const makeMemos = (memos) => {
-    return memos.map((memo, index) => {
-      return <Memo data={memo} key={memo.id} index={index}></Memo>
-    });
-  };
-
   return (
     <div className="App">
-      <div>hello world! 헤헿</div>
-      {memoData && makeMemos(memoData)}
-      {newMemo && <div>save메모합니다!</div>}
+      {type === "board" && <MemoContainer memoData={memoData}/>}
+      {type === "create" && <NewMemo />}
     </div>
   );
 }
