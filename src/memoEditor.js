@@ -11,6 +11,7 @@ class MemoEditorProvider {
   }
 
   static viewType = "memoCustoms.memo";
+
   constructor(context) {
     this.context = context;
   }
@@ -43,19 +44,32 @@ class MemoEditorProvider {
       changeDocumentSubscription.dispose();
     });
 
-    webviewPanel.webview.onDidReceiveMessage(event => {
-      switch (event.type) {
+    webviewPanel.webview.onDidReceiveMessage(message => {
+      switch (message.command) {
         case "load":
           updateWebview();
           return;
 
         case "delete":
+          this._deleteMemo(document, message.index);
+          return;
+
+        case "update":
+          this._updateMemo(document, message.index, message.contents);
+          return;
+
+        case "link":
+          console.log(message);
           return;
       }
     });
   }
 
   _getWebviewContent(webview) {
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, "app", "memo.css"),
+    );
+
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this.context.extensionUri,
@@ -66,21 +80,62 @@ class MemoEditorProvider {
     );
     const nonce = getNonce();
 
-    return `<!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cat Coding</title>
-    </head>
-    <body>
-      <div id="root"></div>
-      <script>
-        const vscode = acquireVsCodeApi();
-      </script>
-      <script nonce="${nonce}" src="${scriptUri}"></script>
-    </body>
-  </html>`;
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link href="${styleUri}" rel="stylesheet">
+          <title>Memo Board</title>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script>
+            const vscode = acquireVsCodeApi();
+          </script>
+          <script nonce="${nonce}" src="${scriptUri}"></script>
+        </body>
+      </html>
+    `;
+  }
+
+  _deleteMemo(document, index) {
+    const json = this._getDocumentAsJson(document);
+    json.splice(index, 1);
+    return this._updateTextDocument(document, json);
+  }
+
+  _updateMemo(document, index, contents) {
+    const json = this._getDocumentAsJson(document);
+    json[index].contents = contents;
+    return this._updateTextDocument(document, json);
+  }
+
+  _getDocumentAsJson(document) {
+    const text = document.getText();
+    if (text.trim().length === 0) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(
+        "Could not get document as json. Content is not valid json",
+      );
+    }
+  }
+
+  _updateTextDocument(document, json) {
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(
+      document.uri,
+      new vscode.Range(0, 0, document.lineCount, 0),
+      JSON.stringify(json, null, 2),
+    );
+
+    return vscode.workspace.applyEdit(edit);
   }
 }
 
