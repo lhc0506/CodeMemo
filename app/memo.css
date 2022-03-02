@@ -45,3 +45,39 @@
 .newMemoContainer .buttonContainer {
   text-align: center;
 }
+
+.memo {
+  position: relative;
+  display: inline-block;
+}
+
+.memo textarea {
+  min-width: 180px;
+  min-height: 150px;
+  padding: 10px;
+}
+
+.memo .delete {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 5px;
+  right: 5px;
+}
+
+.memo .delete:hover {
+  cursor: pointer;
+  color: black;
+}
+
+.memo .link {
+  position: absolute;
+  margin: 10px;
+  bottom: 0;
+  left: 0;
+}
+
+.memo .link:hover {
+  cursor: pointer;
+  color: black;
+}

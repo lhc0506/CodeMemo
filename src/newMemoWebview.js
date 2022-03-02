@@ -7,6 +7,22 @@ class MemoEditorProvider {
   _disposables = [];
   static _panel;
 
+  static createAndShow(extensionPath) {
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
+
+    if (MemoEditorProvider.currentPanel) {
+      MemoEditorProvider.currentPanel._panel.reveal(column);
+      return;
+    }
+
+    MemoEditorProvider.currentPanel = new MemoEditorProvider(
+      extensionPath,
+      column || vscode.ViewColumn.One,
+    );
+  }
+
   constructor(extensionPath, column) {
     this._extensionPath = extensionPath;
 
@@ -23,28 +39,12 @@ class MemoEditorProvider {
     this._panel.webview.html = this._getWebviewContent(this._panel.webview);
 
     this._panel.webview.onDidReceiveMessage(message =>
-      this.receiveMessage(message),
+      this._receiveMessage(message),
     );
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._postCreateMessage();
-  }
-
-  static createAndShow(extensionPath) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
-
-    if (MemoEditorProvider.currentPanel) {
-      MemoEditorProvider.currentPanel._panel.reveal(column);
-      return;
-    }
-
-    MemoEditorProvider.currentPanel = new MemoEditorProvider(
-      extensionPath,
-      column || vscode.ViewColumn.One,
-    );
   }
 
   dispose() {
@@ -82,7 +82,7 @@ class MemoEditorProvider {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${styleUri}" rel="stylesheet">
-          <title>Cat Coding</title>
+          <title>New Memo</title>
         </head>
         <body>
           <div id="root"></div>
@@ -95,7 +95,7 @@ class MemoEditorProvider {
     `;
   }
 
-  async receiveMessage(message) {
+  async _receiveMessage(message) {
     const { command } = message;
 
     if (command === "save") {
@@ -155,7 +155,18 @@ async function saveFile(uri, id, path, line, contents) {
      * to the workspace rather than a discrete file. However, vscode's
      * filesystem api doesn't have a "check if the file exists" function.
      */
-    console.log("error", error);
+    fileData = [
+      {
+        id,
+        path,
+        line,
+        contents,
+        x: 1,
+        y: 2,
+      },
+    ];
+    const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
+    await vscode.workspace.fs.writeFile(uri, writeData);
   }
 }
 

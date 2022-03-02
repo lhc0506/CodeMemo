@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 function MemoContainer({ memoData }) {
   useEffect(() => {
     vscode.postMessage({
-      type: "load",
+      command: "load",
     });
   }, []);
 
