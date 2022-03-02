@@ -1,6 +1,6 @@
 const vscode = require("vscode");
 
-const ReactPanel = require("./reactWebviewPanel");
+const ReactPanel = require("./newMemoWebview");
 const MemoEditorProvider = require("./memoEditor");
 /**
  * @param {vscode.ExtensionContext} context

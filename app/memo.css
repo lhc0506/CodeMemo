@@ -1,0 +1,47 @@
+* {
+  font: sans-serif;
+}
+
+.newMemoContainer {
+  width: 60%;
+  max-width: 500px;
+  background-color: #e5e5e5;
+  border-radius: 10px;
+  color: black;
+}
+
+.newMemoContainer h2 {
+  text-align: center;
+}
+
+.newMemoContainer div {
+  margin: 0 10px 10px 10px;
+  word-break: break-word;
+}
+
+.newMemoContainer textarea {
+  height: 150px;
+  width: 100%;
+  resize: none;
+  box-sizing: border-box;
+  border: 1px solid rgb(122,115,116);
+  border-radius: 5px;
+}
+
+.newMemoContainer button {
+  display: inline-block;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  padding: 8px 15px;
+  right: 10px;
+  background-color: #41b349;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.newMemoContainer .buttonContainer {
+  text-align: center;
+}

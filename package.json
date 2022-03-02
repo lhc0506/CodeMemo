@@ -19,15 +19,15 @@
   "main": "./src/extension.js",
   "contributes": {
     "customEditors": [
-			{
-				"viewType": "memoCustoms.memo",
-				"displayName": "Code Memo",
-				"selector": [
-					{
-						"filenamePattern": "*.memo"
-					}
-				]
-			}
+      {
+        "viewType": "memoCustoms.memo",
+        "displayName": "Code Memo",
+        "selector": [
+          {
+            "filenamePattern": "*.memo"
+          }
+        ]
+      }
     ],
     "commands": [
       {
@@ -55,11 +55,12 @@
     ],
     "menus": {
       "editor/context": [
-				{
+        {
           "submenu": "codememo.menus",
           "group": "codememo"
         }
-      ],"codememo.menus":[
+      ],
+      "codememo.menus": [
         {
           "command": "codememo.create",
           "group": "codememo",
@@ -71,7 +72,7 @@
           "when": "editorTextFocus"
         }
       ]
-		}
+    }
   },
   "scripts": {
     "lint": "eslint .",
@@ -114,8 +115,10 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6"
   }
 }
