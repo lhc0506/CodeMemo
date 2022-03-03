@@ -59,7 +59,7 @@ class MemoEditorProvider {
           return;
 
         case "link":
-          console.log(message);
+          this._openFile(message.path, message.line);
           return;
       }
     });
@@ -98,6 +98,22 @@ class MemoEditorProvider {
         </body>
       </html>
     `;
+  }
+
+  async _openFile(path, line) {
+    const memoSavedDocument = await vscode.workspace.openTextDocument(
+      vscode.Uri.parse("file:" + path),
+    );
+    await vscode.window.showTextDocument(memoSavedDocument, {
+      viewColumn: -2,
+      preview: false,
+    });
+
+    const currentEditor = vscode.window.activeTextEditor;
+    const range = currentEditor.document.lineAt(line).range;
+    const linePosition = new vscode.Position(line, 0);
+    currentEditor.selection = new vscode.Selection(linePosition, linePosition);
+    currentEditor.revealRange(range);
   }
 
   _deleteMemo(document, index) {
