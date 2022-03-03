@@ -10,6 +10,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onCustomEditor:memoCustoms.memo",
     "onCommand:codememo.helloWorld",
     "onCommand:codememo.webview",

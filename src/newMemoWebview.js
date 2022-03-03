@@ -8,28 +8,19 @@ class MemoEditorProvider {
   static _panel;
 
   static createAndShow(extensionPath) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
-
     if (MemoEditorProvider.currentPanel) {
-      MemoEditorProvider.currentPanel._panel.reveal(column);
-      return;
+      MemoEditorProvider.currentPanel.dispose();
     }
 
-    MemoEditorProvider.currentPanel = new MemoEditorProvider(
-      extensionPath,
-      column || vscode.ViewColumn.One,
-    );
+    MemoEditorProvider.currentPanel = new MemoEditorProvider(extensionPath);
   }
 
-  constructor(extensionPath, column) {
+  constructor(extensionPath) {
     this._extensionPath = extensionPath;
 
     this._panel = vscode.window.createWebviewPanel(
       MemoEditorProvider.VIEW_TYPE,
       "Code Memo",
-      // column || vscode.ViewColumn.One,
       { viewColumn: -2 },
       {
         enableScripts: true,
@@ -45,6 +36,8 @@ class MemoEditorProvider {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._postCreateMessage();
+
+    this._updateDecorations();
   }
 
   dispose() {
@@ -104,13 +97,20 @@ class MemoEditorProvider {
         contents,
       } = message;
       const workspaceFolders = vscode.workspace.workspaceFolders;
-      const uri = vscode.Uri.joinPath(
+      const memoFileUri = vscode.Uri.joinPath(
         workspaceFolders[0].uri,
         ".vscode",
         "new.memo",
       );
 
-      await saveFile(uri, id, path, line, contents);
+      await saveFile(memoFileUri, id, path, line, contents);
+
+      vscode.commands.executeCommand(
+        "vscode.openWith",
+        memoFileUri,
+        "memoCustoms.memo",
+      );
+
       this.dispose();
     }
   }
@@ -126,14 +126,34 @@ class MemoEditorProvider {
 
     this._panel.webview.postMessage({ command: "create", data });
   }
+
+  _updateDecorations() {
+    console.log("무엇이 들어있는냐", vscode.window.activeTextEditor);
+    const pos = new vscode.Position(
+      vscode.window.activeTextEditor.selection.active.line,
+      0,
+    );
+    const label = [
+      {
+        range: new vscode.Range(pos, pos),
+        hoverMessage: "Number **" + 12 + "**",
+      },
+    ];
+
+    const textDecoration = vscode.window.createTextEditorDecorationType({
+      gutterIconPath: vscode.Uri.file(
+        path.join(this._extensionPath, "src", "memo.svg"),
+      ),
+    });
+
+    vscode.window.activeTextEditor.setDecorations(textDecoration, label);
+  }
 }
 
 async function saveFile(uri, id, path, line, contents) {
-  let fileData = null;
   try {
-    let fileData = null;
     const buffer = await vscode.workspace.fs.readFile(uri);
-    fileData = JSON.parse(buffer.toString());
+    const fileData = JSON.parse(buffer.toString());
     fileData.push({
       id,
       path,
@@ -142,20 +162,12 @@ async function saveFile(uri, id, path, line, contents) {
       x: 1,
       y: 2,
     });
-    // const document = await vscode.workspace.openTextDocument(uri);
 
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
 
     await vscode.workspace.fs.writeFile(uri, writeData);
   } catch (error) {
-    /*
-     * File not found.
-     *
-     * This is not actually ~exceptional~ since you can save
-     * to the workspace rather than a discrete file. However, vscode's
-     * filesystem api doesn't have a "check if the file exists" function.
-     */
-    fileData = [
+    const fileData = [
       {
         id,
         path,
