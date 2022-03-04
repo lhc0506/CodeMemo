@@ -36,8 +36,6 @@ class MemoEditorProvider {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._postCreateMessage();
-
-    this._updateDecorations();
   }
 
   dispose() {
@@ -110,16 +108,15 @@ class MemoEditorProvider {
         memoFileUri,
         "memoCustoms.memo",
       );
-
+      this._updateDecorations(line, contents);
       this.dispose();
     }
   }
 
   _postCreateMessage() {
     const selection = vscode.window.activeTextEditor.selection;
-
     const data = {
-      id: "id1",
+      id: Date.now(),
       path: vscode.window.activeTextEditor.document.fileName,
       line: selection.active.line,
     };
@@ -127,16 +124,12 @@ class MemoEditorProvider {
     this._panel.webview.postMessage({ command: "create", data });
   }
 
-  _updateDecorations() {
-    console.log("무엇이 들어있는냐", vscode.window.activeTextEditor);
-    const pos = new vscode.Position(
-      vscode.window.activeTextEditor.selection.active.line,
-      0,
-    );
+  _updateDecorations(line, contents) {
+    const pos = new vscode.Position(line, 0);
     const label = [
       {
         range: new vscode.Range(pos, pos),
-        hoverMessage: "Number **" + 12 + "**",
+        hoverMessage: contents,
       },
     ];
 

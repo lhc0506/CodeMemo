@@ -24,7 +24,6 @@ const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
 
 function Memo({ data, index }) {
   const { id, path, line, contents, x, y } = data;
-
   const handleDeleteButton = () => {
     vscode.postMessage({
       command: "delete",
