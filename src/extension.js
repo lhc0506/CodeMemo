@@ -2,7 +2,8 @@ const vscode = require("vscode");
 const path = require("path");
 const ReactPanel = require("./newMemoWebview");
 const MemoEditorProvider = require("./memoEditor");
-const setMemoInCode = require("./memoInCode");
+const { getMemos, setDecorationToCode, deleteMemoInCode } = require("./utils");
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -22,7 +23,7 @@ function activate(context) {
       return;
     }
 
-    setMemoInCode(textDecoration);
+    vscode.commands.executeCommand("codememo.setDecoration");
   });
 
   vscode.window.onDidChangeActiveTextEditor(async doc => {
@@ -30,14 +31,20 @@ function activate(context) {
       return;
     }
 
-    setMemoInCode(textDecoration);
+    vscode.commands.executeCommand("codememo.setDecoration");
   });
-
-  context.subscriptions.push(MemoEditorProvider.register(context));
 
   context.subscriptions.push(
     vscode.commands.registerCommand("codememo.create", () => {
       ReactPanel.createAndShow(context.extensionPath);
+    }),
+    vscode.commands.registerCommand("codememo.delete", async () => {
+      deleteMemoInCode(vscode.window.activeTextEditor);
+    }),
+    MemoEditorProvider.register(context),
+    vscode.commands.registerCommand("codememo.setDecoration", async () => {
+      const memos = await getMemos();
+      setDecorationToCode(memos, textDecoration);
     }),
   );
 }
