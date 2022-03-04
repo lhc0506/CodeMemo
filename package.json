@@ -76,9 +76,10 @@
     }
   },
   "scripts": {
+    "start": "webpack --progress --mode development",
+    "build": "webpack --progress --mode production",
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "dev": "webpack",
     "test": "node ./src/test/runTest.js",
     "prepare": "husky install"
   },
