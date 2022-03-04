@@ -108,7 +108,6 @@ class MemoEditorProvider {
         memoFileUri,
         "memoCustoms.memo",
       );
-      this._updateDecorations(line, contents);
       this.dispose();
     }
   }

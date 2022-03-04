@@ -15,7 +15,8 @@
     "onCommand:codememo.helloWorld",
     "onCommand:codememo.webview",
     "onCommand:codememo.create",
-    "onCommand:codememo.delete"
+    "onCommand:codememo.delete",
+    "onCommand:codememo.setDecoration"
   ],
   "main": "./src/extension.js",
   "contributes": {
