@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 function debounce(fn, wait) {
@@ -22,7 +22,14 @@ const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
   contents,
 }), 300);
 
-function Memo({ data, index }) {
+function Memo({ data, index, isFocus }) {
+  const inputFocus = useRef(null);
+  // useEffect(() => {
+
+  // }, [])
+  if (isFocus) {
+    inputFocus.current.focus();
+  }
   const { id, path, line, contents, x, y } = data;
   const handleDeleteButton = () => {
     vscode.postMessage({
@@ -47,7 +54,7 @@ function Memo({ data, index }) {
     <div className="memo">
       <div className="delete" onClick={handleDeleteButton}>X</div>
       <div className="link" onClick={handleLinkButton}>go to Code</div>
-      <textarea id={id} defaultValue={contents} onChange={handleOnChange}></textarea>
+      <textarea id={id} defaultValue={contents} onChange={handleOnChange} ref={inputFocus}></textarea>
     </div>
   );
 }
@@ -57,4 +64,5 @@ export default Memo;
 Memo.propTypes = {
   data: PropTypes.object,
   index: PropTypes.number.isRequired,
+  isFocus: PropTypes.bool.isRequired,
 };

@@ -18,7 +18,7 @@ async function getMemos() {
 }
 
 function setDecorationToCode(memos, textDecoration) {
-  const opendFilePath = vscode.window.activeTextEditor.document.fileName;
+  const opendFilePath = vscode.window.activeTextEditor?.document.fileName;
 
   const label = [];
   memos.forEach(memo => {
@@ -37,26 +37,26 @@ function setDecorationToCode(memos, textDecoration) {
         hoverMessage: myContent,
       });
     }
-    vscode.window.activeTextEditor.setDecorations(textDecoration, label);
+    vscode.window.activeTextEditor?.setDecorations(textDecoration, label);
   });
 }
 
 async function deleteMemoInCode(textEditor) {
-  const memos = await getMemos();
+  const data = await getMemos();
   const path = textEditor.document.fileName;
   const selection = textEditor.selection;
 
-  const newMemos = memos.filter(memo => {
+  const newMemos = data.memos.filter(memo => {
     return memo.path !== path || memo.line !== selection.active.line;
   });
-
+  data.memos = newMemos;
   const workspaceFolders = vscode.workspace.workspaceFolders;
   const memoFileUri = vscode.Uri.joinPath(
     workspaceFolders[0].uri,
     ".vscode",
     "new.memo",
   );
-  const writeData = Buffer.from(JSON.stringify(newMemos), "utf8");
+  const writeData = Buffer.from(JSON.stringify(data), "utf8");
 
   await vscode.workspace.fs.writeFile(memoFileUri, writeData);
 

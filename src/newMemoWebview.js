@@ -146,7 +146,7 @@ async function saveFile(uri, id, path, line, contents) {
   try {
     const buffer = await vscode.workspace.fs.readFile(uri);
     const fileData = JSON.parse(buffer.toString());
-    fileData.push({
+    fileData.memos.push({
       id,
       path,
       line,
@@ -159,16 +159,19 @@ async function saveFile(uri, id, path, line, contents) {
 
     await vscode.workspace.fs.writeFile(uri, writeData);
   } catch (error) {
-    const fileData = [
-      {
-        id,
-        path,
-        line,
-        contents,
-        x: 1,
-        y: 2,
-      },
-    ];
+    const fileData = {
+      memos: [
+        {
+          id,
+          path,
+          line,
+          contents,
+          x: 1,
+          y: 2,
+        },
+      ],
+      focus: 0,
+    };
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
     await vscode.workspace.fs.writeFile(uri, writeData);
   }

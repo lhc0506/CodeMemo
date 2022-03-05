@@ -81,3 +81,7 @@
   cursor: pointer;
   color: black;
 }
+
+.memo textarea:focus {
+  border: thick double #32a1ce;
+}

@@ -41,11 +41,34 @@ function activate(context) {
     vscode.commands.registerCommand("codememo.delete", async () => {
       deleteMemoInCode(vscode.window.activeTextEditor);
     }),
-    MemoEditorProvider.register(context),
     vscode.commands.registerCommand("codememo.setDecoration", async () => {
       const memos = await getMemos();
-      setDecorationToCode(memos, textDecoration);
+      setDecorationToCode(memos.memos, textDecoration);
     }),
+    vscode.commands.registerCommand("codememo.goToMemo", async () => {
+      const data = await getMemos();
+      const path = vscode.window.activeTextEditor.document.fileName;
+      const selection = vscode.window.activeTextEditor.selection;
+      const index = data.memos.findIndex(
+        memo => memo.path === path && memo.line === selection.active.line,
+      );
+      data.focus = index;
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      const memoFileUri = vscode.Uri.joinPath(
+        workspaceFolders[0].uri,
+        ".vscode",
+        "new.memo",
+      );
+      const writeData = Buffer.from(JSON.stringify(data), "utf8");
+
+      await vscode.workspace.fs.writeFile(memoFileUri, writeData);
+      vscode.commands.executeCommand(
+        "vscode.openWith",
+        memoFileUri,
+        "memoCustoms.memo",
+      );
+    }),
+    MemoEditorProvider.register(context),
   );
 }
 
