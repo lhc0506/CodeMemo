@@ -16,7 +16,8 @@
     "onCommand:codememo.webview",
     "onCommand:codememo.create",
     "onCommand:codememo.delete",
-    "onCommand:codememo.setDecoration"
+    "onCommand:codememo.setDecoration",
+    "onCommand:codememo.goToMemo"
   ],
   "main": "./src/extension.js",
   "contributes": {
@@ -47,6 +48,10 @@
       {
         "command": "codememo.delete",
         "title": "deleteMemo"
+      },
+      {
+        "command": "codememo.goToMemo",
+        "title": "goToMemo"
       }
     ],
     "submenus": [
@@ -70,6 +75,11 @@
         },
         {
           "command": "codememo.delete",
+          "group": "codememo",
+          "when": "editorTextFocus"
+        },
+                {
+          "command": "codememo.goToMemo",
           "group": "codememo",
           "when": "editorTextFocus"
         }

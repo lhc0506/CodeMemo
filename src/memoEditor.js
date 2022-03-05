@@ -48,6 +48,7 @@ class MemoEditorProvider {
       switch (message.command) {
         case "load":
           updateWebview();
+          this._deleteFocus(document);
           return;
 
         case "delete":
@@ -116,15 +117,22 @@ class MemoEditorProvider {
     currentEditor.revealRange(range);
   }
 
+  async _deleteFocus(document) {
+    const json = this._getDocumentAsJson(document);
+    json.focus = "";
+    const writeData = Buffer.from(JSON.stringify(json), "utf8");
+    await vscode.workspace.fs.writeFile(document.uri, writeData);
+  }
+
   _deleteMemo(document, index) {
     const json = this._getDocumentAsJson(document);
-    json.splice(index, 1);
+    json.memos.splice(index, 1);
     return this._updateTextDocument(document, json);
   }
 
   _updateMemo(document, index, contents) {
     const json = this._getDocumentAsJson(document);
-    json[index].contents = contents;
+    json.memos[index].contents = contents;
     return this._updateTextDocument(document, json);
   }
 

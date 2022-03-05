@@ -6,6 +6,7 @@ import { createMode } from "./memoSlice";
 
 function App() {
   const [memoData, setMemoData] = useState();
+  const [focusIndex, setFocusIndex] = useState();
   const dispatch = useDispatch();
   const type = useSelector((state) => state.memo.type);
 
@@ -13,7 +14,8 @@ function App() {
     const onUpdate = (event) => {
       switch (event.data.command) {
         case "update":
-          setMemoData(event.data.data);
+          setMemoData(event.data.data.memos);
+          setFocusIndex(event.data.data.focus);
           break;
         case "create":
           dispatch(createMode(event.data.data));
@@ -27,7 +29,7 @@ function App() {
 
   return (
     <div className="App">
-      {type === "board" && <MemoContainer memoData={memoData}/>}
+      {type === "board" && <MemoContainer memoData={memoData} focus={focusIndex}/>}
       {type === "create" && <NewMemo />}
     </div>
   );
