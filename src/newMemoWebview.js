@@ -150,9 +150,9 @@ async function saveFile(uri, id, path, line, contents) {
       path,
       line,
       contents,
-      x: 1,
-      y: 2,
       color:"#ffffff",
+      x: 0,
+      y: 0,
     });
 
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");

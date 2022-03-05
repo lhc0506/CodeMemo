@@ -43,10 +43,16 @@ function activate(context) {
     }),
     vscode.commands.registerCommand("codememo.setDecoration", async () => {
       const memos = await getMemos();
+      if (!memos) {
+        return;
+      }
       setDecorationToCode(memos.memos, textDecoration);
     }),
     vscode.commands.registerCommand("codememo.goToMemo", async () => {
       const data = await getMemos();
+      if (!data) {
+        vscode.window.showInformationMessage("There is no memo in this code.");
+      }
       const path = vscode.window.activeTextEditor.document.fileName;
       const selection = vscode.window.activeTextEditor.selection;
       const index = data.memos.findIndex(
