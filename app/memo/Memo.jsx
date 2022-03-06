@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { HexColorPicker } from "react-colorful";
-import { useDrag } from 'react-dnd'
+import { useDrag } from "react-dnd";
+
 function debounce(fn, wait) {
   let lastTimeoutId = null;
 
@@ -24,7 +25,7 @@ const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
 }), 300);
 
 function Memo({ data, index, isFocus }) {
-  const { id, path, line, contents, x, y } = data;
+  const { id, path, line, contents, x, y, width, height } = data;
   const inputFocus = useRef(null);
   const colorRef = useRef(null);
   const [showColor, setShowColor] = useState(false);
@@ -38,25 +39,28 @@ function Memo({ data, index, isFocus }) {
   },[]);
 
   useEffect(() => {
-    vscode.postMessage({
-      command: "changeColor",
-      index,
-      color,
-    })
-  },[color])
+    if (showColor) {
+      vscode.postMessage({
+        command: "changeColor",
+        index,
+        color,
+      });
+    }
+  }, [color]);
 
   const clickColorOutside = event => {
     if (colorRef.current && !colorRef.current.contains(event.target)) {
       setShowColor(false);
     }
   };
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "memo",
     item: { index, x, y },
     collect: (monitor) => ({
         isDragging: monitor.isDragging(),
     }),
-}), [index, x, y]);
+  }), [index, x, y]);
 
   if (isFocus) {
     inputFocus.current.focus();
@@ -67,7 +71,7 @@ function Memo({ data, index, isFocus }) {
       command: "delete",
       index,
     });
-  }
+  };
 
   const handleOnChange = (event) => {
     debouncedPostMessage(index, event.target.value);
@@ -83,23 +87,52 @@ function Memo({ data, index, isFocus }) {
 
   const handleShowColorButton = () => {
     setShowColor(true);
-  }
+  };
+
+  const handleResize = (event) => {
+    const { offsetWidth, offsetHeight } = event.target;
+    if (width !== offsetWidth || height !== offsetHeight) {
+      vscode.postMessage({
+        command: "resize",
+        index,
+        width: offsetWidth,
+        height: offsetHeight,
+      });
+    }
+  };
 
   return (
-
-    <div className="memo" ref={drag} style={{
-      opacity: isDragging ? 0.5 : 1,
-      fontSize: 25,
-      fontWeight: "bold",
-      cursor: "move",
-      left: `${x}px`,
-      top: `${y}px`,
-    }}>
+    <div
+      className="memo"
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "move",
+        left: `${x}px`,
+        top: `${y}px`,
+        backgroundColor: data.color,
+      }}
+    >
       <div className="color" onClick={handleShowColorButton}>color</div>
       <div className="delete" onClick={handleDeleteButton}>X</div>
       <div className="link" onClick={handleLinkButton}>go to Code</div>
-      {showColor && <div className="color" ref={colorRef}><HexColorPicker color={color} onChange={setColor} /></div>}
-      <textarea id={id} defaultValue={contents} onChange={handleOnChange} ref={inputFocus} style={{backgroundColor: data.color}}></textarea>
+      {showColor && (
+        <div className="color" ref={colorRef}>
+          <HexColorPicker color={color} onChange={setColor} />
+        </div>
+      )}
+      <textarea
+        id={id}
+        defaultValue={contents}
+        onChange={handleOnChange}
+        onMouseUp={handleResize}
+        ref={inputFocus}
+        style={{
+          backgroundColor: data.color,
+          width,
+          height,
+        }}
+      />
     </div>
   );
 }

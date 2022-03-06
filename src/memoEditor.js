@@ -70,6 +70,10 @@ class MemoEditorProvider {
         case "changeColor":
           this._changeColor(document, message.index, message.color);
           return;
+
+        case "resize":
+          this._resize(document, message.index, message.width, message.height);
+          return;
       }
     });
   }
@@ -130,6 +134,13 @@ class MemoEditorProvider {
     json.focus = "";
     const writeData = Buffer.from(JSON.stringify(json), "utf8");
     await vscode.workspace.fs.writeFile(document.uri, writeData);
+  }
+
+  _resize(document, index, width, height) {
+    const json = this._getDocumentAsJson(document);
+    json.memos[index].width = width;
+    json.memos[index].height = height;
+    return this._updateTextDocument(document, json);
   }
 
   _changeColor(document, index, color) {
