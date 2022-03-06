@@ -78,7 +78,7 @@
           "group": "codememo",
           "when": "editorTextFocus"
         },
-                {
+        {
           "command": "codememo.goToMemo",
           "group": "codememo",
           "when": "editorTextFocus"
@@ -131,6 +131,7 @@
     "@reduxjs/toolkit": "^1.8.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
+    "react-colorful": "^5.5.1",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6"
   }

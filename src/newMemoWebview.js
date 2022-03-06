@@ -11,7 +11,6 @@ class MemoEditorProvider {
     if (MemoEditorProvider.currentPanel) {
       MemoEditorProvider.currentPanel.dispose();
     }
-
     MemoEditorProvider.currentPanel = new MemoEditorProvider(extensionPath);
   }
 
@@ -153,6 +152,7 @@ async function saveFile(uri, id, path, line, contents) {
       contents,
       x: 1,
       y: 2,
+      color:"#ffffff",
     });
 
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
