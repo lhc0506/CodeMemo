@@ -2,7 +2,7 @@ const vscode = require("vscode");
 const path = require("path");
 const ReactPanel = require("./newMemoWebview");
 const MemoEditorProvider = require("./memoEditor");
-const { getMemos, setDecorationToCode, deleteMemoInCode } = require("./utils");
+const { getMemos, setDecorationToCode, deleteMemoInCode, addGitIgnore } = require("./utils");
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -37,6 +37,13 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand("codememo.create", () => {
       ReactPanel.createAndShow(context.extensionPath);
+
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      if (!workspaceFolders) return;
+
+      const workspacePath = workspaceFolders[0].uri.path;
+
+      addGitIgnore(workspacePath);
     }),
     vscode.commands.registerCommand("codememo.delete", async () => {
       deleteMemoInCode(vscode.window.activeTextEditor);

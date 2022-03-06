@@ -1,4 +1,6 @@
 const vscode = require("vscode");
+const fs = require("fs");
+const path = require("path");
 
 async function getMemos() {
   try {
@@ -47,7 +49,7 @@ async function deleteMemoInCode(textEditor) {
     vscode.window.showInformationMessage("There is no memo in this code.");
     return;
   }
-  
+
   const path = textEditor.document.fileName;
   const selection = textEditor.selection;
 
@@ -68,4 +70,29 @@ async function deleteMemoInCode(textEditor) {
   vscode.commands.executeCommand("codememo.setDecoration");
 }
 
-module.exports = { getMemos, setDecorationToCode, deleteMemoInCode };
+function addGitIgnore(workspacePath) {
+  const gitIgnoreContent = "\n# .vscode\nnew.memo";
+
+  if (fs.existsSync(path.join(workspacePath, ".gitignore"))) {
+    const gitIgnore = fs.readFileSync(
+      path.join(workspacePath, ".gitignore"),
+      "utf8",
+    );
+
+    if (gitIgnore.indexOf(gitIgnoreContent) === -1) {
+      fs.appendFileSync(
+        path.join(workspacePath, ".gitignore"),
+        gitIgnoreContent,
+      );
+    }
+  } else {
+    fs.appendFileSync(
+      path.join(workspacePath, ".gitignore"),
+      gitIgnoreContent,
+    );
+  }
+
+}
+
+
+module.exports = { getMemos, setDecorationToCode, deleteMemoInCode, addGitIgnore };
