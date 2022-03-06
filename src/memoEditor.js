@@ -62,6 +62,11 @@ class MemoEditorProvider {
         case "link":
           this._openFile(message.path, message.line);
           return;
+
+        case "changeColor":
+          this._changeColor(document, message.index, message.color);
+        console.log(message);
+          return;
       }
     });
   }
@@ -122,6 +127,12 @@ class MemoEditorProvider {
     json.focus = "";
     const writeData = Buffer.from(JSON.stringify(json), "utf8");
     await vscode.workspace.fs.writeFile(document.uri, writeData);
+  }
+
+  _changeColor(document, index, color) {
+    const json = this._getDocumentAsJson(document);
+    json.memos[index].color = color;
+    return this._updateTextDocument(document, json);
   }
 
   _deleteMemo(document, index) {
