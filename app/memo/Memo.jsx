@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { HexColorPicker } from "react-colorful";
-
+import { useDrag } from 'react-dnd'
 function debounce(fn, wait) {
   let lastTimeoutId = null;
 
@@ -24,6 +24,7 @@ const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
 }), 300);
 
 function Memo({ data, index, isFocus }) {
+  const { id, path, line, contents, x, y } = data;
   const inputFocus = useRef(null);
   const colorRef = useRef(null);
   const [showColor, setShowColor] = useState(false);
@@ -49,12 +50,18 @@ function Memo({ data, index, isFocus }) {
       setShowColor(false);
     }
   };
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "memo",
+    item: { index, x, y },
+    collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+    }),
+}), [index, x, y]);
 
   if (isFocus) {
     inputFocus.current.focus();
   }
 
-  const { id, path, line, contents, x, y } = data;
   const handleDeleteButton = () => {
     vscode.postMessage({
       command: "delete",
@@ -79,7 +86,15 @@ function Memo({ data, index, isFocus }) {
   }
 
   return (
-    <div className="memo">
+
+    <div className="memo" ref={drag} style={{
+      opacity: isDragging ? 0.5 : 1,
+      fontSize: 25,
+      fontWeight: "bold",
+      cursor: "move",
+      left: `${x}px`,
+      top: `${y}px`,
+    }}>
       <div className="color" onClick={handleShowColorButton}>color</div>
       <div className="delete" onClick={handleDeleteButton}>X</div>
       <div className="link" onClick={handleLinkButton}>go to Code</div>

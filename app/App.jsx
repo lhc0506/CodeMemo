@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import MemoContainer from "./memo/MemoContainer";
 import NewMemo from "./memo/NewMemo";
 import { createMode } from "./memoSlice";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 function App() {
   const [memoData, setMemoData] = useState();
@@ -29,7 +31,9 @@ function App() {
 
   return (
     <div className="App">
-      {type === "board" && <MemoContainer memoData={memoData} focus={focusIndex}/>}
+      {type === "board" && <DndProvider backend={HTML5Backend}>
+        <MemoContainer memoData={memoData} focus={focusIndex} setMemo={setMemoData}/>
+      </DndProvider>}
       {type === "create" && <NewMemo />}
     </div>
   );

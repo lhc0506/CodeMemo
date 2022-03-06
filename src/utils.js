@@ -21,7 +21,7 @@ function setDecorationToCode(memos, textDecoration) {
   const opendFilePath = vscode.window.activeTextEditor?.document.fileName;
 
   const label = [];
-  memos.forEach(memo => {
+  memos?.forEach(memo => {
     if (memo.path === opendFilePath) {
       const myContent = new vscode.MarkdownString(
         "[goToMemo](command:codememo.goToMemo)",
@@ -43,6 +43,11 @@ function setDecorationToCode(memos, textDecoration) {
 
 async function deleteMemoInCode(textEditor) {
   const data = await getMemos();
+  if (!data) {
+    vscode.window.showInformationMessage("There is no memo in this code.");
+    return;
+  }
+  
   const path = textEditor.document.fileName;
   const selection = textEditor.selection;
 

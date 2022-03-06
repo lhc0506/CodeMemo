@@ -59,13 +59,16 @@ class MemoEditorProvider {
           this._updateMemo(document, message.index, message.contents);
           return;
 
+        case "drag":
+          this._dragMemo(document, message.index, message.x, message.y);
+          return;
+
         case "link":
           this._openFile(message.path, message.line);
           return;
 
         case "changeColor":
           this._changeColor(document, message.index, message.color);
-        console.log(message);
           return;
       }
     });
@@ -132,6 +135,13 @@ class MemoEditorProvider {
   _changeColor(document, index, color) {
     const json = this._getDocumentAsJson(document);
     json.memos[index].color = color;
+    return this._updateTextDocument(document, json);
+  }
+
+  _dragMemo(document, index, x, y) {
+    const json = this._getDocumentAsJson(document);
+    json.memos[index].x = x;
+    json.memos[index].y = y;
     return this._updateTextDocument(document, json);
   }
 
