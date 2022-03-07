@@ -1,6 +1,5 @@
 const vscode = require("vscode");
-const fs = require("fs");
-const path = require("path");
+const docContent = [];
 
 async function getMemos() {
   try {
@@ -19,8 +18,11 @@ async function getMemos() {
   }
 }
 
-function setDecorationToCode(memos, textDecoration) {
-  const opendFilePath = vscode.window.activeTextEditor?.document.fileName;
+function setDecorationToCode(memos, textDecoration, editor) {
+  if (!editor) {
+    return;
+  }
+  const opendFilePath = editor.document.fileName;
 
   const label = [];
   memos?.forEach(memo => {
@@ -39,7 +41,7 @@ function setDecorationToCode(memos, textDecoration) {
         hoverMessage: myContent,
       });
     }
-    vscode.window.activeTextEditor?.setDecorations(textDecoration, label);
+    editor.setDecorations(textDecoration, label);
   });
 }
 
@@ -70,29 +72,46 @@ async function deleteMemoInCode(textEditor) {
   vscode.commands.executeCommand("codememo.setDecoration");
 }
 
-function addGitIgnore(workspacePath) {
-  const gitIgnoreContent = "\n# .vscode\nnew.memo";
+async function updateMemo(data) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  const memoFileUri = vscode.Uri.joinPath(
+    workspaceFolders[0].uri,
+    ".vscode",
+    "new.memo",
+  );
+  const writeData = Buffer.from(JSON.stringify(data), "utf8");
 
-  if (fs.existsSync(path.join(workspacePath, ".gitignore"))) {
-    const gitIgnore = fs.readFileSync(
-      path.join(workspacePath, ".gitignore"),
-      "utf8",
-    );
-
-    if (gitIgnore.indexOf(gitIgnoreContent) === -1) {
-      fs.appendFileSync(
-        path.join(workspacePath, ".gitignore"),
-        gitIgnoreContent,
-      );
-    }
-  } else {
-    fs.appendFileSync(
-      path.join(workspacePath, ".gitignore"),
-      gitIgnoreContent,
-    );
-  }
-
+  await vscode.workspace.fs.writeFile(memoFileUri, writeData);
 }
 
+function openMemo() {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  const memoFileUri = vscode.Uri.joinPath(
+    workspaceFolders[0].uri,
+    ".vscode",
+    "new.memo",
+  );
 
-module.exports = { getMemos, setDecorationToCode, deleteMemoInCode, addGitIgnore };
+  vscode.commands.executeCommand(
+    "vscode.openWith",
+    memoFileUri,
+    "memoCustoms.memo",
+  );
+}
+
+async function initDocArray({ document }) {
+  docContent.push({
+    name: document.uri.path,
+    content: document.getText(),
+  });
+}
+
+module.exports = {
+  docContent,
+  getMemos,
+  setDecorationToCode,
+  deleteMemoInCode,
+  updateMemo,
+  openMemo,
+  initDocArray,
+};
