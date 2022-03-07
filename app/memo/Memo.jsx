@@ -26,10 +26,11 @@ const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
 
 function Memo({ data, index, isFocus }) {
   const { id, path, line, contents, x, y, width, height } = data;
-  const inputFocus = useRef(null);
+  const selectedMemo = useRef(null);
   const colorRef = useRef(null);
   const [showColor, setShowColor] = useState(false);
   const [color, setColor] = useState("#b32aa9");
+  const defaultValue = useRef(contents);
   useEffect(() => {
     document.addEventListener("mousedown", clickColorOutside);
 
@@ -62,10 +63,6 @@ function Memo({ data, index, isFocus }) {
     }),
   }), [index, x, y]);
 
-  if (isFocus) {
-    inputFocus.current.focus();
-  }
-
   const handleDeleteButton = () => {
     vscode.postMessage({
       command: "delete",
@@ -73,8 +70,8 @@ function Memo({ data, index, isFocus }) {
     });
   };
 
-  const handleOnChange = (event) => {
-    debouncedPostMessage(index, event.target.value);
+  const handleInput = (event) => {
+    debouncedPostMessage(index, event.target.innerHTML);
   };
 
   const handleLinkButton = () => {
@@ -101,6 +98,18 @@ function Memo({ data, index, isFocus }) {
     }
   };
 
+  const handleBoldButton = () => {
+    document.execCommand("bold");
+  };
+
+  const handleStrikeButton = () => {
+    document.execCommand("strikeThrough");
+  };
+
+  if (isFocus) {
+    selectedMemo.current.focus();
+  }
+
   return (
     <div
       className="memo"
@@ -113,20 +122,26 @@ function Memo({ data, index, isFocus }) {
         backgroundColor: data.color,
       }}
     >
-      <div className="color" onClick={handleShowColorButton}>color</div>
-      <div className="delete" onClick={handleDeleteButton}>X</div>
-      <div className="link" onClick={handleLinkButton}>go to Code</div>
+      <div className="memoHeader">
+        <div className="color" onClick={handleShowColorButton}>color</div>
+        <div className="bold" onClick={handleBoldButton}>B</div>
+        <div className="strike" onClick={handleStrikeButton}>S</div>
+        <div className="delete" onClick={handleDeleteButton}>X</div>
+        <div className="link" onClick={handleLinkButton}>go to Code</div>
+      </div>
       {showColor && (
         <div className="color" ref={colorRef}>
           <HexColorPicker color={color} onChange={setColor} />
         </div>
       )}
-      <textarea
+      <div
+        className="contents"
         id={id}
-        defaultValue={contents}
-        onChange={handleOnChange}
+        contentEditable
+        dangerouslySetInnerHTML={{ __html: defaultValue.current }}
         onMouseUp={handleResize}
-        ref={inputFocus}
+        onInput={handleInput}
+        ref={selectedMemo}
         style={{
           backgroundColor: data.color,
           width,
