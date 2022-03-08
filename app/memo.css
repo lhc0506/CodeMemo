@@ -65,12 +65,13 @@
 .memo .contents {
   min-width: 180px;
   min-height: 150px;
-  margin: 20px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
   border: 0;
   padding: 0;
   color: black;
   resize: both;
   overflow: auto;
+  cursor: text;
 }
 
 .memo .delete {
@@ -111,11 +112,13 @@
 .memo .bold:hover {
   cursor: pointer;
   color: black;
+  font-weight: bold;
 }
 
 .memo .strike:hover {
   cursor: pointer;
   color: black;
+  text-decoration: line-through;
 }
 
 .memo .contents:focus {
