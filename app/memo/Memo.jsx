@@ -106,10 +106,6 @@ function Memo({ data, index, isFocus }) {
     document.execCommand("strikeThrough");
   };
 
-  // const handleHiliteButton = () => {
-  //   document.execCommand("backColor", , "yellow");
-  // }
-
   if (isFocus) {
     selectedMemo.current.focus();
   }
@@ -130,7 +126,6 @@ function Memo({ data, index, isFocus }) {
         <div className="color" onClick={handleShowColorButton}>color</div>
         <div className="bold" onClick={handleBoldButton}>B</div>
         <div className="strike" onClick={handleStrikeButton}>S</div>
-        {/* <div className="hilite" onClick={handleHiliteButton}>H</div> */}
         <div className="delete" onClick={handleDeleteButton}>X</div>
         <div className="link" onClick={handleLinkButton}>go to Code</div>
       </div>

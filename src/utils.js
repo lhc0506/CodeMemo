@@ -141,6 +141,7 @@ function openMemo() {
     "vscode.openWith",
     memoFileUri,
     "memoCustoms.memo",
+    vscode.ViewColumn.Beside,
   );
 }
 

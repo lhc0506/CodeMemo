@@ -25,6 +25,14 @@ async function activate(context) {
     isWholeLine: true,
   });
 
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    100,
+  );
+
+  statusBarItem.text = "$(note) codeMemo";
+  statusBarItem.command = "codememo.openMemo";
+  statusBarItem.show();
   const docContent = [];
   const tempMemos = {};
 
@@ -115,6 +123,21 @@ async function activate(context) {
   });
 
   context.subscriptions.push(
+    statusBarItem,
+    vscode.commands.registerCommand("codememo.openMemo", () => {
+      const memoFileUri = vscode.Uri.joinPath(
+        vscode.workspace.workspaceFolders[0].uri,
+        ".vscode",
+        "new.memo",
+      );
+
+      vscode.commands.executeCommand(
+        "vscode.openWith",
+        memoFileUri,
+        "memoCustoms.memo",
+        { viewColumn: -2 },
+      );
+    }),
     vscode.commands.registerCommand("codememo.create", () => {
       ReactPanel.createAndShow(context.extensionPath);
     }),

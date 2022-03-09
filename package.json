@@ -18,7 +18,8 @@
     "onCommand:codememo.delete",
     "onCommand:codememo.goToMemo",
     "onCommand:codememo.updateCreatedMemo",
-    "onCommand:codememo.updateDeletedMemo"
+    "onCommand:codememo.updateDeletedMemo",
+    "onCommand:codememo.openMemo"
   ],
   "main": "./src/extension.js",
   "contributes": {
