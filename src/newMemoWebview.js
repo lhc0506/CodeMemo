@@ -102,6 +102,7 @@ class MemoEditorProvider {
 
       await saveFile(memoFileUri, id, path, line, contents);
 
+      vscode.commands.executeCommand("codememo.updateCreatedMemo");
       vscode.commands.executeCommand(
         "vscode.openWith",
         memoFileUri,
@@ -115,7 +116,7 @@ class MemoEditorProvider {
     const selection = vscode.window.activeTextEditor.selection;
     const data = {
       id: Date.now(),
-      path: vscode.window.activeTextEditor.document.fileName,
+      path: vscode.window.activeTextEditor.document.uri.path,
       line: selection.active.line,
     };
 
@@ -143,8 +144,11 @@ class MemoEditorProvider {
 
 async function saveFile(uri, id, path, line, contents) {
   try {
+    const memoFile = await vscode.workspace.openTextDocument(uri);
+    await memoFile.save();
     const buffer = await vscode.workspace.fs.readFile(uri);
     const fileData = JSON.parse(buffer.toString());
+
     fileData.memos.push({
       id,
       path,
@@ -170,7 +174,7 @@ async function saveFile(uri, id, path, line, contents) {
           contents,
           x: 1,
           y: 2,
-          color: "#e5e5e5",
+          color: "#ffffff",
         },
       ],
       focus: 0,

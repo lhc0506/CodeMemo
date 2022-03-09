@@ -17,7 +17,6 @@ class MemoEditorProvider {
   }
 
   async resolveCustomTextEditor(document, webviewPanel) {
-    // Setup initial content for the webview
     webviewPanel.webview.options = {
       enableScripts: true,
     };
@@ -39,7 +38,6 @@ class MemoEditorProvider {
       },
     );
 
-    // Make sure we get rid of the listener when our editor is closed.
     webviewPanel.onDidDispose(() => {
       changeDocumentSubscription.dispose();
     });
@@ -156,10 +154,14 @@ class MemoEditorProvider {
     return this._updateTextDocument(document, json);
   }
 
-  _deleteMemo(document, index) {
+  async _deleteMemo(document, index) {
     const json = this._getDocumentAsJson(document);
+    const deletedMemo = json.memos[index];
     json.memos.splice(index, 1);
-    return this._updateTextDocument(document, json);
+    await this._updateTextDocument(document, json);
+    const memoFile = await vscode.workspace.openTextDocument(document.uri.path);
+    await memoFile.save();
+    vscode.commands.executeCommand("codememo.updateDeletedMemo", deletedMemo);
   }
 
   _updateMemo(document, index, contents) {

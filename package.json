@@ -16,8 +16,9 @@
     "onCommand:codememo.webview",
     "onCommand:codememo.create",
     "onCommand:codememo.delete",
-    "onCommand:codememo.setDecoration",
-    "onCommand:codememo.goToMemo"
+    "onCommand:codememo.goToMemo",
+    "onCommand:codememo.updateCreatedMemo",
+    "onCommand:codememo.updateDeletedMemo"
   ],
   "main": "./src/extension.js",
   "contributes": {
