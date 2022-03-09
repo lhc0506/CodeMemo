@@ -103,11 +103,7 @@ class MemoEditorProvider {
       await saveFile(memoFileUri, id, path, line, contents);
 
       vscode.commands.executeCommand("codememo.updateCreatedMemo");
-      vscode.commands.executeCommand(
-        "vscode.openWith",
-        memoFileUri,
-        "memoCustoms.memo",
-      );
+      vscode.commands.executeCommand("codememo.openMemo");
       this.dispose();
     }
   }

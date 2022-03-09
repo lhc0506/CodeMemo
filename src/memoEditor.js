@@ -116,7 +116,7 @@ class MemoEditorProvider {
       vscode.Uri.parse("file:" + path),
     );
     await vscode.window.showTextDocument(memoSavedDocument, {
-      viewColumn: -2,
+      viewColumn: vscode.ViewColumn.One,
       preview: false,
     });
 
