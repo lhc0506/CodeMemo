@@ -6,6 +6,11 @@
   "engines": {
     "vscode": "^1.64.0"
   },
+  "publisher": "codeMemo",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lhc0506/CodeMemo"
+  },
   "categories": [
     "Other"
   ],

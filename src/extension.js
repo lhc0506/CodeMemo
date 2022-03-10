@@ -3,7 +3,7 @@ const path = require("path");
 const ReactPanel = require("./newMemoWebview");
 const MemoEditorProvider = require("./memoEditor");
 const {
-  addDocArray,
+  addDocContent,
   getMemos,
   setDecorationToCode,
   deleteMemoInCode,
@@ -15,8 +15,12 @@ const {
  * @param {vscode.ExtensionContext} context
  */
 
+const docContent = [];
+const tempMemos = {};
+
 async function activate(context) {
   console.log("Congratulations, your extension 'codememo' is now active!");
+
   const gutterIconPath = vscode.Uri.file(
     path.join(context.extensionPath, "src", "memo.svg"),
   );
@@ -24,7 +28,6 @@ async function activate(context) {
     gutterIconPath,
     isWholeLine: true,
   });
-
   const statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100,
@@ -33,11 +36,9 @@ async function activate(context) {
   statusBarItem.text = "$(note) codeMemo";
   statusBarItem.command = "codememo.openMemo";
   statusBarItem.show();
-  const docContent = [];
-  const tempMemos = {};
 
   for (const editor of vscode.window.visibleTextEditors) {
-    await addDocArray(editor, docContent);
+    await addDocContent(editor, docContent);
     const data = await getMemos();
 
     if (data) {
@@ -45,98 +46,112 @@ async function activate(context) {
     }
   }
 
-  vscode.workspace.onDidOpenTextDocument(async doc => {
-    if (doc?.uri.scheme !== "file") {
-      return;
-    }
-
-    checkAndSetDecoration(tempMemos, textDecoration);
-  });
-
-  vscode.window.onDidChangeActiveTextEditor(doc => {
-    if (doc?.document.uri.scheme !== "file") {
-      return;
-    }
-
-    addDocArray(doc, docContent);
-    checkAndSetDecoration(tempMemos, textDecoration);
-  });
-
-  vscode.workspace.onDidRenameFiles(async files => {
-    const { newUri, oldUri } = files.files[0];
-    const data = await getMemos();
-    data.memos.forEach(memo => {
-      if (memo.path === oldUri.path) {
-        memo.path = newUri.path;
-      }
-    });
-
-    await updateMemo(data);
-
-    if (vscode.window.activeTextEditor.document.fileName === newUri.path) {
-      checkAndSetDecoration(tempMemos, textDecoration);
-    }
-  });
-
-  vscode.workspace.onDidSaveTextDocument(async doc => {
-    if (doc.uri.scheme !== "file") {
-      return;
-    }
-
-    const tempMemosInFile = tempMemos[doc.uri.path];
-
-    if (!tempMemosInFile) {
-      return;
-    }
-
-    const data = await getMemos();
-    let index = 0;
-    tempMemosInFile.forEach(memo => {
-      for (index; index < data.memos.length; index++) {
-        if (memo.id === data.memos[index].id) {
-          data.memos[index].line = memo.line;
-          break;
-        }
-      }
-    });
-
-    await updateMemo(data);
-  });
-
-  vscode.workspace.onDidCloseTextDocument(doc => {
-    if (doc.uri.scheme !== "file") {
-      return;
-    }
-
-    const docIndex = docContent.findIndex(
-      document => document.name === doc.uri.path,
-    );
-    docContent.splice(docIndex, 1);
-
-    const tempMemosInFile = tempMemos[doc.uri.path];
-
-    if (!tempMemosInFile) {
-      return;
-    }
-
-    delete tempMemos[doc.uri.path];
-  });
-
   context.subscriptions.push(
     statusBarItem,
-    vscode.commands.registerCommand("codememo.openMemo", () => {
-      const memoFileUri = vscode.Uri.joinPath(
-        vscode.workspace.workspaceFolders[0].uri,
-        ".vscode",
-        "new.memo",
-      );
+    vscode.workspace.onDidOpenTextDocument(async doc => {
+      if (doc?.uri.scheme !== "file") {
+        return;
+      }
+      checkAndSetDecoration(tempMemos, textDecoration);
+    }),
 
-      vscode.commands.executeCommand(
-        "vscode.openWith",
-        memoFileUri,
-        "memoCustoms.memo",
-        { viewColumn: -2 },
+    vscode.window.onDidChangeActiveTextEditor(doc => {
+      if (doc?.document.uri.scheme !== "file") {
+        return;
+      }
+      addDocContent(doc, docContent);
+      checkAndSetDecoration(tempMemos, textDecoration);
+    }),
+
+    vscode.workspace.onDidRenameFiles(async files => {
+      const { newUri, oldUri } = files.files[0];
+      const data = await getMemos();
+
+      if (!data) {
+        return;
+      }
+
+      data.memos.forEach(memo => {
+        if (memo.path === oldUri.path) {
+          memo.path = newUri.path;
+        }
+      });
+
+      await updateMemo(data);
+      tempMemos[newUri] = tempMemos[oldUri];
+      delete tempMemos[oldUri];
+      if (vscode.window.activeTextEditor?.document.fileName === newUri.path) {
+        checkAndSetDecoration(tempMemos, textDecoration);
+      }
+    }),
+
+    vscode.workspace.onDidSaveTextDocument(async doc => {
+      if (doc.uri.scheme !== "file") {
+        return;
+      }
+
+      const tempMemosInFile = tempMemos[doc.uri.path];
+
+      if (!tempMemosInFile) {
+        return;
+      }
+
+      const data = await getMemos();
+      const savedMemosofDoc = data.memos.filter(memo => {
+        if (memo.path === doc.uri.path) {
+          memo.status = "saved";
+          return true;
+        }
+      });
+
+      if (tempMemosInFile.length !== savedMemosofDoc.length) {
+        return;
+      }
+
+      let index = 0;
+      tempMemosInFile.forEach(memo => {
+        for (index; index < data.memos.length; index++) {
+          if (memo.id === data.memos[index].id) {
+            data.memos[index].line = memo.line;
+            break;
+          }
+        }
+      });
+
+      await updateMemo(data);
+    }),
+
+    vscode.workspace.onDidCloseTextDocument(async doc => {
+      if (doc.uri.scheme !== "file") {
+        return;
+      }
+
+      const docIndex = docContent.findIndex(
+        document => document.name === doc.uri.path,
       );
+      docContent.splice(docIndex, 1);
+
+      const tempMemosInFile = tempMemos[doc.uri.path];
+
+      if (!tempMemosInFile) {
+        return;
+      }
+
+      const data = await getMemos();
+      const updatedMemos = data.memos.filter(memo => {
+        if (memo.path === doc.uri.path && memo.status === "created") {
+          return false;
+        }
+        return true;
+      });
+
+      data.memos = updatedMemos;
+
+      await updateMemo(data);
+      delete tempMemos[doc.uri.path];
+    }),
+    vscode.commands.registerCommand("codememo.openMemo", () => {
+      openMemo(vscode.ViewColumn.Beside);
     }),
     vscode.commands.registerCommand("codememo.create", () => {
       ReactPanel.createAndShow(context.extensionPath);
@@ -157,7 +172,7 @@ async function activate(context) {
       );
       data.focus = index;
       await updateMemo(data);
-      openMemo();
+      openMemo(vscode.ViewColumn.Beside);
     }),
     vscode.commands.registerCommand("codememo.updateCreatedMemo", async () => {
       if (!tempMemos) {
@@ -195,7 +210,7 @@ async function activate(context) {
 
           if (!tempMemos || !tempMemos[deletedMemo.path]) {
             const data = await getMemos();
-            setDecorationToCode(data.memos, textDecoration, editor);
+            setDecorationToCode(data?.memos, textDecoration, editor);
           } else {
             tempMemos[deletedMemo.path] = tempMemos[deletedMemo.path].filter(
               memo => memo.id !== deletedMemo.id,
@@ -272,7 +287,7 @@ async function activate(context) {
         docContent.splice(matchedIndex, 1);
 
         checkAndSetDecoration(tempMemos, textDecoration);
-        addDocArray(doc, docContent);
+        addDocContent(doc, docContent);
       }
     }),
     MemoEditorProvider.register(context),
@@ -284,4 +299,5 @@ function deactivate() {}
 module.exports = {
   activate,
   deactivate,
+  tempMemos,
 };

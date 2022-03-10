@@ -1,4 +1,5 @@
 const vscode = require("vscode");
+const { getNonce } = require("./utils");
 
 class MemoEditorProvider {
   static register(context) {
@@ -195,16 +196,6 @@ class MemoEditorProvider {
 
     return vscode.workspace.applyEdit(edit);
   }
-}
-
-function getNonce() {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }
 
 module.exports = MemoEditorProvider;

@@ -1,5 +1,6 @@
 const vscode = require("vscode");
 const path = require("path");
+const { openMemo, getNonce } = require("./utils");
 
 class MemoEditorProvider {
   static currentPanel;
@@ -93,9 +94,8 @@ class MemoEditorProvider {
         data: { id, path, line },
         contents,
       } = message;
-      const workspaceFolders = vscode.workspace.workspaceFolders;
       const memoFileUri = vscode.Uri.joinPath(
-        workspaceFolders[0].uri,
+        vscode.workspace.workspaceFolders[0].uri,
         ".vscode",
         "new.memo",
       );
@@ -103,7 +103,7 @@ class MemoEditorProvider {
       await saveFile(memoFileUri, id, path, line, contents);
 
       vscode.commands.executeCommand("codememo.updateCreatedMemo");
-      vscode.commands.executeCommand("codememo.openMemo");
+      openMemo(vscode.ViewColumn.Active);
       this.dispose();
     }
   }
@@ -139,6 +139,8 @@ class MemoEditorProvider {
 }
 
 async function saveFile(uri, id, path, line, contents) {
+  const { tempMemos } = require("./extension");
+  const status = tempMemos[path] ? "created" : "saved";
   try {
     const memoFile = await vscode.workspace.openTextDocument(uri);
     await memoFile.save();
@@ -155,6 +157,7 @@ async function saveFile(uri, id, path, line, contents) {
       y: 0,
       width: "180px",
       height: "150px",
+      status,
     });
 
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
@@ -168,9 +171,12 @@ async function saveFile(uri, id, path, line, contents) {
           path,
           line,
           contents,
-          x: 1,
-          y: 2,
           color: "#ffffff",
+          x: 0,
+          y: 0,
+          width: "180px",
+          height: "150px",
+          status,
         },
       ],
       focus: 0,
@@ -178,16 +184,6 @@ async function saveFile(uri, id, path, line, contents) {
     const writeData = Buffer.from(JSON.stringify(fileData), "utf8");
     await vscode.workspace.fs.writeFile(uri, writeData);
   }
-}
-
-function getNonce() {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }
 
 module.exports = MemoEditorProvider;
