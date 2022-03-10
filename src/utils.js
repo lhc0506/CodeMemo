@@ -21,7 +21,6 @@ function setDecorationToCode(memos, textDecoration, editor) {
   if (!editor) {
     return;
   }
-
   if (memos || memos.lenght === 0) {
     editor.setDecorations(textDecoration, []);
   }
@@ -51,12 +50,11 @@ function setDecorationToCode(memos, textDecoration, editor) {
 }
 
 async function checkAndSetDecoration(tempMemos, textDecoration) {
-  const memos = await getMemos();
+  const data = await getMemos();
 
-  if (!memos) {
+  if (!data) {
     return;
   }
-
   const path = vscode.window.activeTextEditor?.document.uri.path;
 
   if (tempMemos[path]) {
@@ -67,7 +65,7 @@ async function checkAndSetDecoration(tempMemos, textDecoration) {
     );
   } else {
     setDecorationToCode(
-      memos.memos,
+      data.memos,
       textDecoration,
       vscode.window.activeTextEditor,
     );
@@ -78,16 +76,29 @@ async function deleteMemoInCode(textEditor, tempMemos) {
   const path = textEditor.document.uri.path;
   const selection = textEditor.selection;
   const tempMemosInFile = tempMemos[path];
+  const memoFileUri = vscode.Uri.joinPath(
+    vscode.workspace.workspaceFolders[0].uri,
+    ".vscode",
+    "new.memo",
+  );
+
   const data = await getMemos();
-  let newMemos;
+  let deletedMemo;
+  let updatedMemos;
+
+  if (!data) {
+    vscode.window.showInformationMessage("There is no memo in this code.");
+    return;
+  }
 
   if (tempMemosInFile) {
     const memoIndex = tempMemosInFile.findIndex(
       memo => memo.line === selection.active.line,
     );
-    newMemos = data.memos.filter(memo => {
-      return memo.path !== path || memo.id !== tempMemosInFile[memoIndex].id;
-    });
+    updatedMemos = data.memos.filter(
+      memo => memo.path !== path || memo.id !== tempMemosInFile[memoIndex].id,
+    );
+    deletedMemo = tempMemosInFile[memoIndex];
     tempMemosInFile.splice(memoIndex, 1);
     if (tempMemosInFile.length === 0) {
       delete tempMemos[path];
@@ -95,41 +106,38 @@ async function deleteMemoInCode(textEditor, tempMemos) {
       tempMemos[path] = tempMemosInFile;
     }
   } else {
-    if (!data) {
-      vscode.window.showInformationMessage("There is no memo in this code.");
-      return;
-    }
-
-    newMemos = data.memos.filter(memo => {
-      return memo.path !== path || memo.line !== selection.active.line;
+    updatedMemos = data.memos.filter(memo => {
+      if (memo.path === path && memo.line === selection.active.line) {
+        deletedMemo = memo;
+        return false;
+      }
+      return true;
     });
   }
 
-  data.memos = newMemos;
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  const memoFileUri = vscode.Uri.joinPath(
-    workspaceFolders[0].uri,
-    ".vscode",
-    "new.memo",
-  );
-  const writeData = Buffer.from(JSON.stringify(data), "utf8");
-
-  await vscode.workspace.fs.writeFile(memoFileUri, writeData);
+  data.memos = updatedMemos;
+  const memoFile = await vscode.workspace.openTextDocument(memoFileUri);
+  await memoFile.save();
+  await updateMemo(data);
+  vscode.commands.executeCommand("codememo.updateDeletedMemo", deletedMemo);
 }
 
 async function updateMemo(data) {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
   const memoFileUri = vscode.Uri.joinPath(
-    workspaceFolders[0].uri,
+    vscode.workspace.workspaceFolders[0].uri,
     ".vscode",
     "new.memo",
   );
+
+  const memoFile = await vscode.workspace.openTextDocument(memoFileUri);
+  await memoFile.save();
+
   const writeData = Buffer.from(JSON.stringify(data), "utf8");
 
   await vscode.workspace.fs.writeFile(memoFileUri, writeData);
 }
 
-function openMemo() {
+function openMemo(column) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   const memoFileUri = vscode.Uri.joinPath(
     workspaceFolders[0].uri,
@@ -141,11 +149,11 @@ function openMemo() {
     "vscode.openWith",
     memoFileUri,
     "memoCustoms.memo",
-    vscode.ViewColumn.Beside,
+    column,
   );
 }
 
-function addDocArray({ document }, docContent) {
+function addDocContent({ document }, docContent) {
   const matchedIndex = docContent.findIndex(
     doc => doc.name === document.uri.path,
   );
@@ -160,12 +168,23 @@ function addDocArray({ document }, docContent) {
   });
 }
 
+function getNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
 module.exports = {
   getMemos,
   setDecorationToCode,
   deleteMemoInCode,
   updateMemo,
   openMemo,
-  addDocArray,
+  addDocContent,
   checkAndSetDecoration,
+  getNonce,
 };
