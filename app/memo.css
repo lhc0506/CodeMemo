@@ -55,6 +55,8 @@
 .memo {
   position: absolute;
   display: inline-block;
+  cursor: move;
+  overflow: hidden;
 }
 
 .memo .memoHeader {

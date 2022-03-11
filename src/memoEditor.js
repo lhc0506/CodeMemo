@@ -135,24 +135,24 @@ class MemoEditorProvider {
     await vscode.workspace.fs.writeFile(document.uri, writeData);
   }
 
-  _resize(document, index, width, height) {
+  async _resize(document, index, width, height) {
     const json = this._getDocumentAsJson(document);
     json.memos[index].width = width;
     json.memos[index].height = height;
-    return this._updateTextDocument(document, json);
+    return await this._updateTextDocument(document, json);
   }
 
-  _changeColor(document, index, color) {
+  async _changeColor(document, index, color) {
     const json = this._getDocumentAsJson(document);
     json.memos[index].color = color;
-    return this._updateTextDocument(document, json);
+    return await this._updateTextDocument(document, json);
   }
 
-  _dragMemo(document, index, x, y) {
+  async _dragMemo(document, index, x, y) {
     const json = this._getDocumentAsJson(document);
     json.memos[index].x = x;
     json.memos[index].y = y;
-    return this._updateTextDocument(document, json);
+    return await this._updateTextDocument(document, json);
   }
 
   async _deleteMemo(document, index) {
@@ -160,15 +160,13 @@ class MemoEditorProvider {
     const deletedMemo = json.memos[index];
     json.memos.splice(index, 1);
     await this._updateTextDocument(document, json);
-    const memoFile = await vscode.workspace.openTextDocument(document.uri.path);
-    await memoFile.save();
     vscode.commands.executeCommand("codememo.updateDeletedMemo", deletedMemo);
   }
 
-  _updateMemo(document, index, contents) {
+  async _updateMemo(document, index, contents) {
     const json = this._getDocumentAsJson(document);
     json.memos[index].contents = contents;
-    return this._updateTextDocument(document, json);
+    return await this._updateTextDocument(document, json);
   }
 
   _getDocumentAsJson(document) {
@@ -186,7 +184,7 @@ class MemoEditorProvider {
     }
   }
 
-  _updateTextDocument(document, json) {
+  async _updateTextDocument(document, json) {
     const edit = new vscode.WorkspaceEdit();
     edit.replace(
       document.uri,
@@ -194,7 +192,9 @@ class MemoEditorProvider {
       JSON.stringify(json, null, 2),
     );
 
-    return vscode.workspace.applyEdit(edit);
+    await vscode.workspace.applyEdit(edit);
+    const memoFile = await vscode.workspace.openTextDocument(document.uri.path);
+    await memoFile.save();
   }
 }
 

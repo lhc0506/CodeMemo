@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { HexColorPicker } from "react-colorful";
-import { useDrag } from "react-dnd";
 
 function debounce(fn, wait) {
   let lastTimeoutId = null;
@@ -18,19 +17,14 @@ function debounce(fn, wait) {
   };
 }
 
-const debouncedPostMessage = debounce((index, contents) => vscode.postMessage({
-  command: "update",
-  index,
-  contents,
-}), 300);
-
-function Memo({ data, index, isFocus }) {
+function Memo({ data, index, isFocus, vscodeFunc }) {
   const { id, path, line, contents, x, y, width, height } = data;
   const selectedMemo = useRef(null);
   const colorRef = useRef(null);
   const [showColor, setShowColor] = useState(false);
   const [color, setColor] = useState("#b32aa9");
   const defaultValue = useRef(contents);
+
   useEffect(() => {
     document.addEventListener("mousedown", clickColorOutside);
 
@@ -41,11 +35,7 @@ function Memo({ data, index, isFocus }) {
 
   useEffect(() => {
     if (showColor) {
-      vscode.postMessage({
-        command: "changeColor",
-        index,
-        color,
-      });
+      debounce(vscodeFunc.changeColor(index, color), 300);
     }
   }, [color]);
 
@@ -55,31 +45,16 @@ function Memo({ data, index, isFocus }) {
     }
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "memo",
-    item: { index, x, y },
-    collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-    }),
-  }), [index, x, y]);
-
   const handleDeleteButton = () => {
-    vscode.postMessage({
-      command: "delete",
-      index,
-    });
+    vscodeFunc.deleteMemo(index);
   };
 
   const handleInput = (event) => {
-    debouncedPostMessage(index, event.target.innerHTML);
+    debounce(vscodeFunc.update(index, event.target.innerHTML), 300);
   };
 
   const handleLinkButton = () => {
-    vscode.postMessage({
-      command: "link",
-      path,
-      line,
-    });
+    vscodeFunc.linkToCode(path, line);
   };
 
   const handleShowColorButton = () => {
@@ -89,12 +64,7 @@ function Memo({ data, index, isFocus }) {
   const handleResize = (event) => {
     const { offsetWidth, offsetHeight } = event.target;
     if (width !== offsetWidth || height !== offsetHeight) {
-      vscode.postMessage({
-        command: "resize",
-        index,
-        width: offsetWidth,
-        height: offsetHeight,
-      });
+      vscodeFunc.resize(index, offsetWidth, offsetHeight);
     }
   };
 
@@ -106,21 +76,29 @@ function Memo({ data, index, isFocus }) {
     document.execCommand("strikeThrough");
   };
 
+  const drag = (event) => {
+    event.dataTransfer.setData("Text", event.target.id);
+    event.dataTransfer.setData("Index", index);
+    event.target.style.opacity = "0.4";
+  };
+
   if (isFocus) {
-    selectedMemo.current.focus();
+    selectedMemo.current?.focus();
   }
 
   return (
     <div
       className="memo"
-      ref={drag}
       style={{
-        opacity: isDragging ? 0.5 : 1,
-        cursor: "move",
-        left: `${x}px`,
-        top: `${y}px`,
+        zIndex: index,
+        left: x,
+        top: y,
         backgroundColor: data.color,
       }}
+      draggable="true"
+      onDragStart={drag}
+      onDragEnd={(event) => event.target.style.opacity = "1"}
+      id={"drag" + id}
     >
       <div className="memoHeader">
         <div className="color" onClick={handleShowColorButton}>color</div>
@@ -130,7 +108,7 @@ function Memo({ data, index, isFocus }) {
         <div className="link" onClick={handleLinkButton}>go to Code</div>
       </div>
       {showColor && (
-        <div className="color" ref={colorRef}>
+        <div className="color" ref={colorRef} title="color">
           <HexColorPicker color={color} onChange={setColor} />
         </div>
       )}
@@ -158,4 +136,5 @@ Memo.propTypes = {
   data: PropTypes.object,
   index: PropTypes.number,
   isFocus: PropTypes.bool.isRequired,
+  vscodeFunc: PropTypes.object.isRequired,
 };
