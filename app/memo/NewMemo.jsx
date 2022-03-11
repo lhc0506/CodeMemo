@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 
-function NewMemo() {
+function NewMemo({ data }) {
   const [contents, setContents] = useState("");
-  const data = useSelector((state) => state.memo.newMemo);
   const handleOnClick = () => {
     vscode.postMessage({
       data,
@@ -31,3 +30,7 @@ function NewMemo() {
 }
 
 export default NewMemo;
+
+NewMemo.propTypes = {
+  data: PropTypes.object.isRequired,
+}
