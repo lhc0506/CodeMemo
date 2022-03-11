@@ -156,6 +156,6 @@ export default Memo;
 
 Memo.propTypes = {
   data: PropTypes.object,
-  index: PropTypes.number.isRequired,
+  index: PropTypes.number,
   isFocus: PropTypes.bool.isRequired,
 };

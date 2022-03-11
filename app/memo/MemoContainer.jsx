@@ -5,7 +5,7 @@ import { useDrop } from "react-dnd";
 
 const showAllMemos = (memos, focus) => {
   return memos?.map((memo, index) => {
-    return <Memo data={memo} key={memo.id} index={index} isFocus={index === focus} left={memo.x} top={memo.y} id={memo.id}></Memo>
+    return <Memo data={memo} key={memo.id} index={index} isFocus={index === focus} left={memo.x} top={memo.y} id={memo.id} />;
   });
 };
 
@@ -19,7 +19,7 @@ const showMemosInFile = (memos, fileName) => {
   const memosInFile = memos.filter((memo) => memo.path.endsWith(fileName));
   return memosInFile.map((memoInFile) => {
     const index = memos.findIndex((memo) => memo === memoInFile);
-    return <Memo data={memoInFile} key={memoInFile.id} index={index} left={memoInFile.x} top={memoInFile.y} id={memoInFile.id}></Memo>
+    return <Memo data={memoInFile} key={memoInFile.id} index={index} left={memoInFile.x} top={memoInFile.y} id={memoInFile.id} />;
   });
 };
 
