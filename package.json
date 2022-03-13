@@ -4,9 +4,9 @@
   "description": "",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.64.0"
+    "vscode": "^1.63.0"
   },
-  "publisher": "codeMemo",
+  "publisher": "HoChanLee",
   "repository": {
     "type": "git",
     "url": "git://github.com/lhc0506/CodeMemo"
@@ -14,10 +14,18 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "codememo",
+    "memo"
+  ],
+  "author": {
+    "name": "Ho Chan Lee",
+    "email": "lhc0506@gmail.com"
+  },
+  "icon": "icon.png",
   "activationEvents": [
     "onStartupFinished",
     "onCustomEditor:memoCustoms.memo",
-    "onCommand:codememo.helloWorld",
     "onCommand:codememo.webview",
     "onCommand:codememo.create",
     "onCommand:codememo.delete",
@@ -40,10 +48,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "codememo.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "codememo.webview",
         "title": "Webview"
@@ -98,7 +102,7 @@
     "build": "webpack --progress --mode production",
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "node ./src/test/runTest.js",
+    "test": "jest --env=jsdom",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -116,6 +120,10 @@
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
+    "@testing-library/dom": "^8.11.3",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "14.x",
@@ -128,6 +136,7 @@
     "eslint-plugin-react": "^7.29.2",
     "glob": "^7.2.0",
     "husky": "^7.0.4",
+    "jest": "^27.5.1",
     "lint-staged": "^12.3.4",
     "mocha": "^9.2.1",
     "typescript": "^4.5.5",
@@ -135,12 +144,19 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.8.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-colorful": "^5.5.1",
-    "react-dnd": "^15.1.1",
-    "react-dnd-html5-backend": "^15.1.2",
     "react-dom": "^17.0.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "ts",
+      "tsx",
+      "json",
+      "node"
+    ]
   }
 }

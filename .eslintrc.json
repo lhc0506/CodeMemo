@@ -25,5 +25,15 @@
 		"constructor-super": "warn",
 		"valid-typeof": "warn",
 		"no-extra-semi": "error"
-	}
+	},
+	"overrides": [
+    {
+      "files": [
+        "**/*.test.js"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }

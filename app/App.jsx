@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MemoContainer from "./memo/MemoContainer";
 import NewMemo from "./memo/NewMemo";
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { vscodeFunctions } from "./memo/utils";
 
 function App() {
   const [memoData, setMemoData] = useState();
@@ -30,10 +29,10 @@ function App() {
 
   return (
     <div className="App">
-      {type === "board" && <DndProvider backend={HTML5Backend}>
+      {type === "board" &&
         <MemoContainer memoData={memoData} focus={focusIndex} setMemo={setMemoData}/>
-      </DndProvider>}
-      {type === "create" && <NewMemo data={newMemo}/>}
+      }
+      {type === "create" && <NewMemo data={newMemo} handleOnClick={vscodeFunctions.saveMemo}/>}
     </div>
   );
 }

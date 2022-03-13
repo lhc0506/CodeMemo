@@ -1,17 +1,17 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Memo from "./Memo";
 import PropTypes from "prop-types";
-import { useDrop } from "react-dnd";
+import { vscodeFunctions } from "./utils";
 
 const showAllMemos = (memos, focus) => {
   return memos?.map((memo, index) => {
-    return <Memo data={memo} key={memo.id} index={index} isFocus={index === focus} left={memo.x} top={memo.y} id={memo.id} />;
+    return <Memo data={memo} key={memo.id} index={index} isFocus={index === focus} left={memo.x} top={memo.y} id={memo.id} vscodeFunc={vscodeFunctions}/>;
   });
 };
 
 const showFiles = (files) => {
   return files?.map((file) => {
-    return <option value={file} key={file}>{file}</option>
+    return <option value={file} key={file}>{file}</option>;
   });
 };
 
@@ -19,29 +19,19 @@ const showMemosInFile = (memos, fileName) => {
   const memosInFile = memos.filter((memo) => memo.path.endsWith(fileName));
   return memosInFile.map((memoInFile) => {
     const index = memos.findIndex((memo) => memo === memoInFile);
-    return <Memo data={memoInFile} key={memoInFile.id} index={index} left={memoInFile.x} top={memoInFile.y} id={memoInFile.id} />;
+    return <Memo data={memoInFile} key={memoInFile.id} index={index} left={memoInFile.x} top={memoInFile.y} id={memoInFile.id} vscodeFunc={vscodeFunctions} />;
   });
 };
 
-function MemoContainer({ memoData, focus, setMemo }) {
+function MemoContainer({ memoData, focus }) {
   const [fileOption, setFileOption] = useState("all");
   const[files, setFiles] = useState();
   const fileOptionRef = useRef(null);
   const pathSet = new Set();
-  useEffect(() => {
-    vscode.postMessage({
-      command: "load",
-    });
-  }, []);
 
-  const moveBox = useCallback((index, x, y) => {
-    vscode.postMessage({
-      command: "drag",
-      index,
-      x,
-      y,
-    });
-  }, [setMemo, memoData]);
+  useEffect(() => {
+    vscodeFunctions.loadData();
+  }, []);
 
   useEffect(() => {
     if (!memoData) return;
@@ -54,22 +44,27 @@ function MemoContainer({ memoData, focus, setMemo }) {
     setFiles(Array.from(pathSet));
   }, [memoData]);
 
-  const [, drop] = useDrop(() => ({
-      accept: "memo",
-      drop(item, monitor) {
-          const delta = monitor.getDifferenceFromInitialOffset();
-          const left = Math.round(item.x + delta.x);
-          const top = Math.round(item.y + delta.y);
-          moveBox(item.index, left, top);
-          return undefined;
-      },
-  }), [moveBox]);
-
-
-
   const handleOnChange = (event) => {
     setFileOption(event.target.value);
   };
+
+  const drop = (event) => {
+    event.preventDefault();
+    const targetId = event.dataTransfer.getData("Text");
+    const index = event.dataTransfer.getData("Index");
+    const targetItem = document.getElementById(targetId);
+    const rect = event.target.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const xCoordinate = x - targetItem.offsetWidth / 2;
+    const yCoordinate = y - targetItem.offsetHeight / 2;
+
+    vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
+  }
+
+  const drageOver = (event) => {
+    event.preventDefault();
+  }
 
   return (
     <>
@@ -77,8 +72,24 @@ function MemoContainer({ memoData, focus, setMemo }) {
         <option value="all">All</option>
         {showFiles(files)}
       </select>
-      {fileOption === "all" && <div className="memoContainer" ref={drop}>{showAllMemos(memoData, focus)}</div>}
-      {fileOption !== "all" && <div className="memoContainer" ref={drop}>{showMemosInFile(memoData, fileOption)}</div>}
+      {fileOption === "all" && (
+        <div
+          className="memoContainer"
+          onDragOver={drageOver}
+          onDrop={drop}
+        >
+          {showAllMemos(memoData, focus)}
+        </div>
+      )}
+      {fileOption !== "all" && (
+        <div
+          className="memoContainer"
+          onDragOver={drageOver}
+          onDrop={drop}
+        >
+          {showMemosInFile(memoData, fileOption)}
+        </div>
+      )}
     </>
   );
 }
@@ -88,5 +99,4 @@ export default MemoContainer;
 MemoContainer.propTypes = {
   memoData: PropTypes.array,
   focus: PropTypes.any,
-  setMemo: PropTypes.func,
 };
