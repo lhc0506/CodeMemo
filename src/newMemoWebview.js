@@ -97,7 +97,7 @@ class MemoEditorProvider {
       const memoFileUri = vscode.Uri.joinPath(
         vscode.workspace.workspaceFolders[0].uri,
         ".vscode",
-        "new.memo",
+        "memoBoard.memo",
       );
 
       await saveFile(memoFileUri, id, path, line, contents);

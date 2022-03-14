@@ -63,7 +63,7 @@ class MemoEditorProvider {
           return;
 
         case "link":
-          this._openFile(message.path, message.line);
+          this._openFile(message.path, message.line, message.id);
           return;
 
         case "changeColor":
@@ -112,7 +112,7 @@ class MemoEditorProvider {
     `;
   }
 
-  async _openFile(path, line) {
+  async _openFile(path, line, id) {
     const memoSavedDocument = await vscode.workspace.openTextDocument(
       vscode.Uri.parse("file:" + path),
     );
@@ -122,8 +122,12 @@ class MemoEditorProvider {
     });
 
     const currentEditor = vscode.window.activeTextEditor;
-    const range = currentEditor.document.lineAt(line).range;
-    const linePosition = new vscode.Position(line, 0);
+    const { tempMemos } = require("./extension");
+    const codeLine = tempMemos?.[path]
+      ? tempMemos[path].find(memo => (memo.id = id)).line
+      : line;
+    const range = currentEditor.document.lineAt(codeLine).range;
+    const linePosition = new vscode.Position(codeLine, 0);
     currentEditor.selection = new vscode.Selection(linePosition, linePosition);
     currentEditor.revealRange(range);
   }

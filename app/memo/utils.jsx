@@ -17,11 +17,12 @@ export const vscodeFunctions = {
       index,
     });
   },
-  linkToCode: (path, line) => {
+  linkToCode: (path, line, id) => {
     vscode.postMessage({
       command: "link",
       path,
       line,
+      id,
     });
   },
   resize: (index, width, height) => {

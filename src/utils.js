@@ -6,7 +6,7 @@ async function getMemos() {
     const memoFileUri = vscode.Uri.joinPath(
       workspaceFolders[0].uri,
       ".vscode",
-      "new.memo",
+      "memoBoard.memo",
     );
     const buffer = await vscode.workspace.fs.readFile(memoFileUri);
     const memos = await JSON.parse(buffer.toString());
@@ -79,7 +79,7 @@ async function deleteMemoInCode(textEditor, tempMemos) {
   const memoFileUri = vscode.Uri.joinPath(
     vscode.workspace.workspaceFolders[0].uri,
     ".vscode",
-    "new.memo",
+    "memoBoard.memo",
   );
 
   const data = await getMemos();
@@ -126,7 +126,7 @@ async function updateMemo(data) {
   const memoFileUri = vscode.Uri.joinPath(
     vscode.workspace.workspaceFolders[0].uri,
     ".vscode",
-    "new.memo",
+    "memoBoard.memo",
   );
 
   const memoFile = await vscode.workspace.openTextDocument(memoFileUri);
@@ -142,7 +142,7 @@ function openMemo(column) {
   const memoFileUri = vscode.Uri.joinPath(
     workspaceFolders[0].uri,
     ".vscode",
-    "new.memo",
+    "memoBoard.memo",
   );
 
   vscode.commands.executeCommand(
@@ -178,6 +178,20 @@ function getNonce() {
   return text;
 }
 
+async function checkMemoIsAvail(memos) {
+  const path = vscode.window.activeTextEditor?.document.uri.path;
+  const selectedLine = vscode.window.activeTextEditor.selection.active.line;
+
+  if (!memos || !memos[path]) {
+    const data = await getMemos();
+    return data?.memos.find(
+      memo => memo.path === path && memo.line === selectedLine,
+    );
+  }
+
+  return memos[path].find(memo => memo.line === selectedLine);
+}
+
 module.exports = {
   getMemos,
   setDecorationToCode,
@@ -187,4 +201,5 @@ module.exports = {
   addDocContent,
   checkAndSetDecoration,
   getNonce,
+  checkMemoIsAvail,
 };
