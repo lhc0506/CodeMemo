@@ -154,8 +154,18 @@ class MemoEditorProvider {
 
   async _dragMemo(document, index, x, y) {
     const json = this._getDocumentAsJson(document);
+    let minZIndex = Number.MAX_SAFE_INTEGER;
+    json.memos.forEach(memo => {
+      minZIndex = Math.min(memo.zIndex, minZIndex);
+    });
+    let maxZIndex = 0;
+    json.memos.forEach(memo => {
+      memo.zIndex -= minZIndex - 1;
+      maxZIndex = Math.max(memo.zIndex, maxZIndex);
+    });
     json.memos[index].x = x;
     json.memos[index].y = y;
+    json.memos[index].zIndex = maxZIndex + 1;
     return await this._updateTextDocument(document, json);
   }
 
