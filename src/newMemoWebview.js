@@ -146,7 +146,10 @@ async function saveFile(uri, id, path, line, contents) {
     await memoFile.save();
     const buffer = await vscode.workspace.fs.readFile(uri);
     const fileData = JSON.parse(buffer.toString());
-
+    let maxZIndex = 0;
+    fileData.memos.forEach(memo => {
+      maxZIndex = Math.max(memo.zIndex, maxZIndex);
+    });
     fileData.memos.push({
       id,
       path,
@@ -157,6 +160,7 @@ async function saveFile(uri, id, path, line, contents) {
       y: 0,
       width: "180px",
       height: "150px",
+      zIndex: maxZIndex + 1,
       status,
     });
 
@@ -176,6 +180,7 @@ async function saveFile(uri, id, path, line, contents) {
           y: 0,
           width: "180px",
           height: "150px",
+          zIndex: 0,
           status,
         },
       ],

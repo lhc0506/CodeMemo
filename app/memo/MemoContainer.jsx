@@ -50,15 +50,14 @@ function MemoContainer({ memoData, focus }) {
 
   const drop = (event) => {
     event.preventDefault();
-    const targetId = event.dataTransfer.getData("Text");
     const index = event.dataTransfer.getData("Index");
-    const targetItem = document.getElementById(targetId);
+    const offsetX = event.dataTransfer.getData("OffsetX");
+    const offsetY = event.dataTransfer.getData("OffsetY");
     const rect = event.target.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    const xCoordinate = x - targetItem.offsetWidth / 2;
-    const yCoordinate = y - targetItem.offsetHeight / 2;
-
+    const xCoordinate = x - offsetX;
+    const yCoordinate = y - offsetY;
     vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
   }
 

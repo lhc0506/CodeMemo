@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { HexColorPicker } from "react-colorful";
+import { vscodeFunctions } from "./utils";
 
 function debounce(fn, wait) {
   let lastTimeoutId = null;
@@ -18,7 +19,7 @@ function debounce(fn, wait) {
 }
 
 function Memo({ data, index, isFocus, vscodeFunc }) {
-  const { id, path, line, contents, x, y, width, height } = data;
+  const { id, path, line, contents, x, y, width, height, zIndex } = data;
   const selectedMemo = useRef(null);
   const colorRef = useRef(null);
   const [showColor, setShowColor] = useState(false);
@@ -77,8 +78,9 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
   };
 
   const drag = (event) => {
-    event.dataTransfer.setData("Text", event.target.id);
     event.dataTransfer.setData("Index", index);
+    event.dataTransfer.setData("OffsetX", event.nativeEvent.offsetX);
+    event.dataTransfer.setData("OffsetY", event.nativeEvent.offsetY);
     event.target.style.opacity = "0.4";
   };
 
@@ -90,7 +92,7 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
     <div
       className="memo"
       style={{
-        zIndex: index,
+        zIndex,
         left: x,
         top: y,
         backgroundColor: data.color,
@@ -98,6 +100,20 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
       draggable="true"
       onDragStart={drag}
       onDragEnd={(event) => event.target.style.opacity = "1"}
+      onDrop={(event) => {
+        event.stopPropagation();
+        const index = event.dataTransfer.getData("Index");
+        const offsetX = event.dataTransfer.getData("OffsetX");
+        const offsetY = event.dataTransfer.getData("OffsetY");
+        const memoContainer = document.querySelector(".memoContainer");
+        const rect = memoContainer.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const xCoordinate = x - offsetX;
+        const yCoordinate = y - offsetY;
+        vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
+
+      }}
       id={"drag" + id}
     >
       <div className="memoHeader">
