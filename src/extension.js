@@ -10,6 +10,7 @@ const {
   updateMemo,
   openMemo,
   checkAndSetDecoration,
+  checkMemoIsAvail,
 } = require("./utils");
 /**
  * @param {vscode.ExtensionContext} context
@@ -153,8 +154,13 @@ async function activate(context) {
     vscode.commands.registerCommand("codememo.openMemo", () => {
       openMemo(vscode.ViewColumn.Beside);
     }),
-    vscode.commands.registerCommand("codememo.create", () => {
-      ReactPanel.createAndShow(context.extensionPath);
+    vscode.commands.registerCommand("codememo.create", async () => {
+      const isAvailable = await checkMemoIsAvail(tempMemos);
+      if (isAvailable) {
+        vscode.window.showInformationMessage("Line already has memo");
+      } else {
+        ReactPanel.createAndShow(context.extensionPath);
+      }
     }),
     vscode.commands.registerCommand("codememo.delete", async () => {
       await deleteMemoInCode(vscode.window.activeTextEditor, tempMemos);
@@ -167,9 +173,18 @@ async function activate(context) {
       }
       const path = vscode.window.activeTextEditor.document.fileName;
       const selection = vscode.window.activeTextEditor.selection;
-      const index = data.memos.findIndex(
-        memo => memo.path === path && memo.line === selection.active.line,
-      );
+      let index;
+
+      if (tempMemos[path]) {
+        index = tempMemos[path].findIndex(
+          memo => memo.line === selection.active.line,
+        );
+      } else {
+        index = data.memos.findIndex(
+          memo => memo.path === path && memo.line === selection.active.line,
+        );
+      }
+
       data.focus = index;
       await updateMemo(data);
       openMemo(vscode.ViewColumn.Beside);
@@ -229,7 +244,12 @@ async function activate(context) {
       if (!isDirty || version <= 1) {
         return;
       }
+
       const data = await getMemos();
+      if (!data) {
+        return;
+      }
+
       const path = vscode.window.activeTextEditor?.document.uri.path;
       if (!path) {
         return;
@@ -275,7 +295,10 @@ async function activate(context) {
             continue;
           }
           if (type === "add") {
-            if (memo.line === activeLine && afterContentsArray[activeLine]) {
+            if (
+              memo.line === activeLine &&
+              afterContentsArray[activeLine].trim()
+            ) {
               continue;
             }
             memo.line++;

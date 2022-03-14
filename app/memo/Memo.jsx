@@ -54,7 +54,7 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
   };
 
   const handleLinkButton = () => {
-    vscodeFunc.linkToCode(path, line);
+    vscodeFunc.linkToCode(path, line, id);
   };
 
   const handleShowColorButton = () => {
