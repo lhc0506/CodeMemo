@@ -77,11 +77,25 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
     document.execCommand("strikeThrough");
   };
 
-  const drag = (event) => {
+  const handleDrag = (event) => {
     event.dataTransfer.setData("Index", index);
     event.dataTransfer.setData("OffsetX", event.nativeEvent.offsetX);
     event.dataTransfer.setData("OffsetY", event.nativeEvent.offsetY);
     event.target.style.opacity = "0.4";
+  };
+
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    const index = event.dataTransfer.getData("Index");
+    const offsetX = event.dataTransfer.getData("OffsetX");
+    const offsetY = event.dataTransfer.getData("OffsetY");
+    const memoContainer = document.querySelector(".memoContainer");
+    const rect = memoContainer.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const xCoordinate = x - offsetX;
+    const yCoordinate = y - offsetY;
+    vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
   };
 
   if (isFocus) {
@@ -98,22 +112,9 @@ function Memo({ data, index, isFocus, vscodeFunc }) {
         backgroundColor: data.color,
       }}
       draggable="true"
-      onDragStart={drag}
+      onDragStart={handleDrag}
       onDragEnd={(event) => event.target.style.opacity = "1"}
-      onDrop={(event) => {
-        event.stopPropagation();
-        const index = event.dataTransfer.getData("Index");
-        const offsetX = event.dataTransfer.getData("OffsetX");
-        const offsetY = event.dataTransfer.getData("OffsetY");
-        const memoContainer = document.querySelector(".memoContainer");
-        const rect = memoContainer.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const xCoordinate = x - offsetX;
-        const yCoordinate = y - offsetY;
-        vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
-
-      }}
+      onDrop={handleDrop}
       id={"drag" + id}
     >
       <div className="memoHeader">
