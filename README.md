@@ -13,7 +13,7 @@ In Memoboard, you can see your all memos or memos filtered by file.<br/><br/>
 5. Your memo will be added in memoBoard.
 6. If it is the first memo in your workspace, "memoBoard.memo" file will be created in root/.vscode folder and your memo will be saved.
 
-![createMemo](https://user-images.githubusercontent.com/79738187/158061590-6fc37237-a66b-41ca-829e-023883c6583b.gif)<br/><br/><br/>
+![createMemo](https://user-images.githubusercontent.com/79738187/158532637-0e9ed20a-94f8-4b4b-a238-63b8951e860c.gif)<br><br><br>
 
 ### Ways to go to memoBoard
 ---
@@ -22,17 +22,19 @@ In Memoboard, you can see your all memos or memos filtered by file.<br/><br/>
 3. You can open "memoBoard.memo" file in root/.vscode to show your memoBoard.
 4. You can go to memoBoard after you click "goToMemo" in right mouse button menu.
 
-![showmemoboard](https://user-images.githubusercontent.com/79738187/158062368-4680502a-b5f9-4731-96c9-7a592c3a7581.gif)
+![showmemoboard](https://user-images.githubusercontent.com/79738187/158532827-636330a1-01b4-4499-abd6-42d8caee1ecb.gif)
 
-<br/><br/>
+<br><br>
 
 ### Ways to delete your Memo
 ---
 1. Memo will be deleted by clicking "deleteMemo" button in right mouse button menu.
 2. You can remove memo by clicking "X" button in memo in memoboard.
 
-![deletememo](https://user-images.githubusercontent.com/79738187/158064706-62fdae92-fb74-43f2-975d-2b28cf281a9f.gif)<br/><br/>
+![deletememo](https://user-images.githubusercontent.com/79738187/158532941-39dba0b0-6e76-47c7-b08e-f18e6aa46b7c.gif)<br><br>
 
 ### Others
 ---
 - Current Extension only works on Mac OS
+- need VSCode Version 1.63 or over.
+- [한글 Readme](./README_KOREAN.md)
