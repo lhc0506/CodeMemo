@@ -48,7 +48,7 @@ function MemoContainer({ memoData, focus }) {
     setFileOption(event.target.value);
   };
 
-  const drop = (event) => {
+  const handleDrop = (event) => {
     event.preventDefault();
     const index = event.dataTransfer.getData("Index");
     const offsetX = event.dataTransfer.getData("OffsetX");
@@ -61,7 +61,7 @@ function MemoContainer({ memoData, focus }) {
     vscodeFunctions.dragMemo(index, xCoordinate, yCoordinate);
   }
 
-  const drageOver = (event) => {
+  const handleDrageOver = (event) => {
     event.preventDefault();
   }
 
@@ -75,7 +75,7 @@ function MemoContainer({ memoData, focus }) {
         <div
           className="memoContainer"
           onDragOver={drageOver}
-          onDrop={drop}
+          onDrop={handleDrop}
         >
           {showAllMemos(memoData, focus)}
         </div>
@@ -83,8 +83,8 @@ function MemoContainer({ memoData, focus }) {
       {fileOption !== "all" && (
         <div
           className="memoContainer"
-          onDragOver={drageOver}
-          onDrop={drop}
+          onDragOver={handleDrageOver}
+          onDrop={handleDrop}
         >
           {showMemosInFile(memoData, fileOption)}
         </div>
