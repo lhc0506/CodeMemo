@@ -171,7 +171,7 @@ async function activate(context) {
       if (!data) {
         vscode.window.showInformationMessage("There is no memo in this code.");
       }
-      const path = vscode.window.activeTextEditor.document.fileName;
+      const path = vscode.window.activeTextEditor.document.uri.path;
       const selection = vscode.window.activeTextEditor.selection;
       let index;
 
@@ -181,10 +181,15 @@ async function activate(context) {
         );
       } else {
         index = data.memos.findIndex(
-          memo => memo.path === path && memo.line === selection.active.line,
+          memo => memo.path === path && memo.line === selection.active.line
         );
       }
 
+      if (index === -1) {
+        vscode.window.showInformationMessage("There is no memo in this line.");
+        return;
+      }
+      console.log(index);
       data.focus = index;
       await updateMemo(data);
       openMemo(vscode.ViewColumn.Beside);

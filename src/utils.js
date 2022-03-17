@@ -95,6 +95,10 @@ async function deleteMemoInCode(textEditor, tempMemos) {
     const memoIndex = tempMemosInFile.findIndex(
       memo => memo.line === selection.active.line,
     );
+    if (memoIndex === -1) {
+      vscode.window.showInformationMessage("There is no memo in this line.");
+      return;
+    }
     updatedMemos = data.memos.filter(
       memo => memo.path !== path || memo.id !== tempMemosInFile[memoIndex].id,
     );
@@ -114,7 +118,10 @@ async function deleteMemoInCode(textEditor, tempMemos) {
       return true;
     });
   }
-
+  if (!deletedMemo) {
+    vscode.window.showInformationMessage("There is no memo in this line.");
+    return;
+  }
   data.memos = updatedMemos;
   const memoFile = await vscode.workspace.openTextDocument(memoFileUri);
   await memoFile.save();
