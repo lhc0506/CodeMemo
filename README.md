@@ -6,7 +6,7 @@ In Memoboard, you can see your all memos or memos filtered by file.<br/><br/>
 
 ### How to make Memo
 ---
-1. Click right mouse button on the line of the code where you want to add memo.
+1. Click right mouse button on the line of the code where you want to add memo. Or write "createMemo" and press Enter in the Command Pallet (ctrl+shift+P).
 2. In menus, find codeMemo and click createMemo.
 3. New memo creator will be shown besides your viewColumn.
 4. Write your memo in notes and click "Save" button.
@@ -21,6 +21,7 @@ In Memoboard, you can see your all memos or memos filtered by file.<br/><br/>
 2. You can click "goToMemo" button after put your cursor on the code a memo saved in
 3. You can open "memoBoard.memo" file in root/.vscode to show your memoBoard.
 4. You can go to memoBoard after you click "goToMemo" in right mouse button menu.
+5. Click a line where memo is saved. Open the Command Pallet(Press ctrl+shift+P). Type "goToMemo" and then press Enter.
 
 ![showmemoboard](https://user-images.githubusercontent.com/79738187/158532827-636330a1-01b4-4499-abd6-42d8caee1ecb.gif)
 
@@ -30,7 +31,7 @@ In Memoboard, you can see your all memos or memos filtered by file.<br/><br/>
 ---
 1. Memo will be deleted by clicking "deleteMemo" button in right mouse button menu.
 2. You can remove memo by clicking "X" button in memo in memoboard.
-
+3. Click a line where memo is saved. Open the Command Pallet(Press ctrl+shift+P). Type "deleteMemo" and then press Enter.
 ![deletememo](https://user-images.githubusercontent.com/79738187/158532941-39dba0b0-6e76-47c7-b08e-f18e6aa46b7c.gif)<br><br>
 
 ### Others
