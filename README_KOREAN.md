@@ -50,7 +50,8 @@ codeMemo는 VS Code에 메모를 작성 할 수 있는 VS Code extension입니�
 
   1. 메모를 저장하고 싶은 라인에서 오른쪽 마우스 클릭.
   2. codeMemo 메뉴에서 createMemo선택.
-  3. 메모 생성창에서 메모 작성 후 save 클릭.
+  3. 혹은 메모를 저장하고 싶은 라인에서 ctrl+shift+P 눌러 Command Pallet 오픈. createMemo 검색 후 엔터키 누름.
+  4. 메모 생성창에서 메모 작성 후 save 클릭.
   <br><br>
 
 - ### 메모장 가기
@@ -60,12 +61,15 @@ codeMemo는 VS Code에 메모를 작성 할 수 있는 VS Code extension입니�
   2. 메모가 저장된 코드에 마우스를 올리면, 저장된 메모와 함께 gotoCode 링크 띄어짐. 링크 클릭.
   3. "memoBoard.memo" 파일 열기.
   4. 메모가 저장된 코드에 우측 마우스 클릭. codeMemo 메뉴에서 gotoMemo 클릭.
+  5. 메모가 저장된 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, goToMemo 검색 후 엔터.
   <br><br>
 - ### 메모 삭제
   ![deletememo](https://user-images.githubusercontent.com/79738187/158532941-39dba0b0-6e76-47c7-b08e-f18e6aa46b7c.gif)
 
   1. 메모장에서 삭제하고싶은 메모우측 상단 'x'클릭.
-  2. 지우고 싶은 메모가 있는 코드에서 우측 마우스 클릭. codeMemo 메뉴에서 deleteMemo 클릭.<br><br>
+  2. 지우고 싶은 메모가 있는 코드에서 우측 마우스 클릭. codeMemo 메뉴에서 deleteMemo 클릭.
+  3. 지우고 싶은 메모가 있는 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, deleteMemo 검색 후 엔터.
+  <br><br>
 
 # 🔥 어려웠던 점
 ## **VS Code API**
