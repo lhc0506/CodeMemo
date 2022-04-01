@@ -189,7 +189,7 @@ async function activate(context) {
         vscode.window.showInformationMessage("There is no memo in this line.");
         return;
       }
-      console.log(index);
+
       data.focus = index;
       await updateMemo(data);
       openMemo(vscode.ViewColumn.Beside);

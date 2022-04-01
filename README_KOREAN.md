@@ -45,31 +45,40 @@ codeMemo는 VS Code에 메모를 작성 할 수 있는 VS Code extension입니�
 <br><br>
 
 # 🖥 주요 기능
-- ### 메모 생성 순서
-    ![createMemo](https://user-images.githubusercontent.com/79738187/158532637-0e9ed20a-94f8-4b4b-a238-63b8951e860c.gif)
 
-  1. 메모를 저장하고 싶은 라인에서 오른쪽 마우스 클릭.
-  2. codeMemo 메뉴에서 createMemo선택.
-  3. 혹은 메모를 저장하고 싶은 라인에서 ctrl+shift+P 눌러 Command Pallet 오픈. createMemo 검색 후 엔터키 누름.
-  4. 메모 생성창에서 메모 작성 후 save 클릭.
-  <br><br>
+- <details>
+    <summary>메모 생성 순서</summary>
+    <div markdown="1">
+      ![createMemo](https://user-images.githubusercontent.com/79738187/158532637-0e9ed20a-94f8-4b4b-a238-63b8951e860c.gif)
 
-- ### 메모장 가기
-  ![showmemoboard](https://user-images.githubusercontent.com/79738187/158532827-636330a1-01b4-4499-abd6-42d8caee1ecb.gif)
+      1. 메모를 저장하고 싶은 라인에서 오른쪽 마우스 클릭.
+      2. codeMemo 메뉴에서 createMemo선택.
+      3. 혹은 메모를 저장하고 싶은 라인에서 ctrl+shift+P 눌러 Command Pallet 오픈. createMemo 검색 후 엔터키 누름.
+      4. 메모 생성창에서 메모 작성 후 save 클릭.
+    </div>
+  </details>
+- <details>
+    <summary>메모장 가기</summary>
+    <div markdown="1">
+      ![showmemoboard](https://user-images.githubusercontent.com/79738187/158532827-636330a1-01b4-4499-abd6-42d8caee1ecb.gif)
 
-  1. 하단 status Bar 우측의 codeMemo 클릭.
-  2. 메모가 저장된 코드에 마우스를 올리면, 저장된 메모와 함께 gotoCode 링크 띄어짐. 링크 클릭.
-  3. "memoBoard.memo" 파일 열기.
-  4. 메모가 저장된 코드에 우측 마우스 클릭. codeMemo 메뉴에서 gotoMemo 클릭.
-  5. 메모가 저장된 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, goToMemo 검색 후 엔터.
-  <br><br>
-- ### 메모 삭제
-  ![deletememo](https://user-images.githubusercontent.com/79738187/158532941-39dba0b0-6e76-47c7-b08e-f18e6aa46b7c.gif)
+      1. 하단 status Bar 우측의 codeMemo 클릭.
+      2. 메모가 저장된 코드에 마우스를 올리면, 저장된 메모와 함께 gotoCode 링크 띄어짐. 링크 클릭.
+      3. "memoBoard.memo" 파일 열기.
+      4. 메모가 저장된 코드에 우측 마우스 클릭. codeMemo 메뉴에서 gotoMemo 클릭.
+      5. 메모가 저장된 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, goToMemo 검색 후 엔터.
+    </div>
+  </details>
+- <details>
+    <summary>메모 삭제</summary>
+    <div markdown="1">
+      ![deletememo](https://user-images.githubusercontent.com/79738187/158532941-39dba0b0-6e76-47c7-b08e-f18e6aa46b7c.gif)
 
-  1. 메모장에서 삭제하고싶은 메모우측 상단 'x'클릭.
-  2. 지우고 싶은 메모가 있는 코드에서 우측 마우스 클릭. codeMemo 메뉴에서 deleteMemo 클릭.
-  3. 지우고 싶은 메모가 있는 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, deleteMemo 검색 후 엔터.
-  <br><br>
+      1. 메모장에서 삭제하고싶은 메모우측 상단 'x'클릭.
+      2. 지우고 싶은 메모가 있는 코드에서 우측 마우스 클릭. codeMemo 메뉴에서 deleteMemo 클릭.
+      3. 지우고 싶은 메모가 있는 코드에서 Command Pallet오픈 (ctrl+shift+P) 후, deleteMemo 검색 후 엔터.
+    </div>
+  </details>
 
 # 🔥 어려웠던 점
 ## **VS Code API**
@@ -80,21 +89,25 @@ codeMemo는 VS Code에 메모를 작성 할 수 있는 VS Code extension입니�
 
   가장 큰 문제는 제가 원하는 기능이 VS Code API에 존재 하는지 여부를 찾는 것 이었습니다. 공식 문서를 확인하여 원하는 기능이 될것이라 예상되는 후보를 뽑아 놓았습니다. 공식 문서의 설명이 잘 되어있었지만 정확한 예시는 나오지 않아 어떻게 사용되는지 의아한 부분들은 다른 extension의 코드를 분석하여, 후보군에서 추려서 실제 사용을 해보는 식으로 진행 하였습니다.
 
-  VS Code Extension 관련 Refernce 가 적어 learning curve가 높았습니다. 하지만 앞으로 새로운 기술을 접할 때, 어떤 진입장벽이 있다 하더라도 스스로 해결나갈 수 있겠다는 자신감과 저에게 맞는 습득 방법을 얻을 수 있는 기회였다고 생각 됩니다. 또한 저에게는 하나의 도전이었기에 큰 성취감을 얻을 수 있었습니다.<br><br>
+  VS Code Extension 관련 Refernce 가 적어 learning curve가 높았습니다. 하지만 앞으로 새로운 기술을 접할 때, 어떤 진입장벽이 있다 하더라도 스스로 해결나갈 수 있겠다는 자신감과 저에게 맞는 습득 방법을 얻을 수 있는 기회였다고 생각 됩니다. 또한 저에게는 하나의 도전이었기에 큰 성취감을 얻을 수 있었습니다.
 
-  - ### **익스텐션 실행 구조**
+  <details>
+    <summary><b>익스텐션 실행 구조</b></summary>
+    <div markdown="1">
 
-    Code Memo는 VS Code API 중 Webview와 Custom Editor API 기능을 주로 사용합니다.
-    Webview는  VS Code 내부에서 extension이 조절하는 iframe 이라고 생각 할 수 있습니다.
-    Webview는 대부분의 HTML 컨텐츠를 렌더링 할 수 있고, Code Memo는 React를 사용하여 웹뷰를 구성하였습니다.
+      Code Memo는 VS Code API 중 Webview와 Custom Editor API 기능을 주로 사용합니다.
+      Webview는  VS Code 내부에서 extension이 조절하는 iframe 이라고 생각 할 수 있습니다. Webview는 대부분의 HTML 컨텐츠를 렌더링 할 수 있고, Code Memo는 React를 사용하여 웹뷰를 구성하였습니다.
+      
+      Webview를 front단 이라고 생각을 하면, server에 해당하는 부분이 extension, db에 해당되는 부분은 로컬 File이라고 할 수 있습니다. Front에서 발생한 Evnet가 extension 혹은 Local file에 영향을 주고 싶다면, 메시지 패싱이라는 기능을 사용해야합니다. 메시지 패싱은 extension과 Webview 사이에 일어나는 통신으로 이를 통하여, 값을 주고 받을 수도, 해당 메세지에 따라 extension이나 Webview에서 특정 action을 실행 시키는 것도 가능합니다.
 
-    Webview를 front단 이라고 생각을 하면, server에 해당하는 부분이 extension, db에 해당되는 부분은 로컬 File이라고 할 수 있습니다. Front에서 발생한 Evnet가 extension 혹은 Local file에 영향을 주고 싶다면, 메시지 패싱이라는 기능을 사용해야합니다. 메시지 패싱은 extension과 Webview 사이에 일어나는 통신으로 이를 통하여, 값을 주고 받을 수도, 해당 메세지에 따라 extension이나 Webview에서 특정 action을 실행 시키는 것도 가능합니다.
+      Webview내에서 로컬 File에 직접 접근 하는것은 불가능합니다. 따라서 로컬 file을 다룰 때에는 extension을 통해 action이 일어나게 다뤄야합니다.
 
-    Webview내에서 로컬 File에 직접 접근 하는것은 불가능합니다. 따라서 로컬 file을 다룰 때에는 extension을 통해 action이 일어나게 다뤄야합니다.
+      Custom Editor API는 VS Code의 text editor(local file)를 바탕으로 Webview를 구성 합니다. 동일하게 Webview를 사용하지만, 익스텐션에서 따로 로컬 file을 불러오는 것이 아닌, 특정 조건에 맞는 file이면, 동일하게 구성을 해주는 특징이 있습니다. CodeMemo의 memoBoard는 Custom Editor API의 이런 특징을 사용하였습니다.
 
-    Custom Editor API는 VS Code의 text editor(local file)를 바탕으로 Webview를 구성 합니다. 동일하게 Webview를 사용하지만, 익스텐션에서 따로 로컬 file을 불러오는 것이 아닌, 특정 조건에 맞는 file이면, 동일하게 구성을 해주는 특징이 있습니다. CodeMemo의 memoBoard는 Custom Editor API의 이런 특징을 사용하였습니다.
-
-    ![image](https://user-images.githubusercontent.com/79738187/158312669-328890c3-bd18-4496-be9a-195598d1ee42.png) <br><br>
+  ![image](https://user-images.githubusercontent.com/79738187/158312669-328890c3-bd18-4496-be9a-195598d1ee42.png) 
+    </div>
+  </details>
+  <br><br>
 
 ## **코드 추적**
 
